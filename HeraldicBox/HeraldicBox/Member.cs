@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace HeraldicBox
 {
-    class HeraldicBox
+    class Member
     {
-        public static void Start()
-        {
-            Test.Init();
-            HeraldicBoxUI.Setup();
-        }
     }
 }

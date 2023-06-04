@@ -39,12 +39,15 @@
     <Compile Include="ChildTracker.cs" />
     <Compile Include="Family.cs" />
     <Compile Include="HeraldicBox.cs" />
+    <Compile Include="HeraldicBoxActions.cs" />
     <Compile Include="HeraldicBoxTab.cs" />
+    <Compile Include="HeraldicBoxUI.cs" />
     <Compile Include="HeraldicComponent.cs" />
     <Compile Include="HeraldicInfo.cs" />
+    <Compile Include="Member.cs" />
     <Compile Include="Mojai\Libraries\Other\DropsLibrary.cs" />
-    <Compile Include="Mojai\Libraries\UI\ButtonLibrary.cs" />
     <Compile Include="Mojai\Libraries\UI\TabLibrary.cs" />
+    <Compile Include="Util.cs" />
     <Content Include="Mojai\Libraries\UI\TODO.txt" />
     <Compile Include="Mojai\Libraries\UI\WindowLibrary.cs" />
     <Compile Include="Main.cs" />

@@ -10,51 +10,50 @@ namespace Mojai.Libraries.UI
 {
     class WindowLibrary
     {
-
-        public class Window
+        public class EasyScrollWindow
         {
-            public string windowID, windowTitle; // <-- Not necessary but im too lazy to delete this.
             public ScrollWindow scrollWindow;
-            public GameObject windowGameObject;
+            public GameObject content;
 
-            public void updateScrollRect(GameObject content, int count, int size)
+            private ScrollRect scrollRect;
+            private RectTransform scrollRectTransfrom;
+            private RectTransform contentRectTransform;
+
+            public void UpdateVerticalRect(float newSize)
             {
-                var scrollRect = content.GetComponent<RectTransform>();
-                scrollRect.sizeDelta = new Vector2(0, count * size);
+                contentRectTransform.sizeDelta = new Vector2((float)200, newSize);
             }
 
-            public void Show()
-            {
-                Windows.ShowWindow(this.windowID);
-            }
-
-            public Window(string id, string title)
+            public EasyScrollWindow(string id, string title)
             {
                 scrollWindow = Windows.CreateNewWindow(id, title);
 
-                windowID = id;
-                windowTitle = title;
-
-                var scrollView = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{scrollWindow.name}/Background/Scroll View");
+                GameObject scrollView = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{scrollWindow.name}/Background/Scroll View");
+                scrollRect = scrollView.gameObject.GetComponent<ScrollRect>();
+                scrollRectTransfrom = scrollView.gameObject.GetComponent<RectTransform>();
                 scrollView.gameObject.SetActive(true);
 
-                windowGameObject = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{scrollWindow.name}/Background/Scroll View/Viewport/Content");
+                content = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{scrollWindow.name}/Background/Scroll View/Viewport/Content");
+                contentRectTransform = content.gameObject.GetComponent<RectTransform>();
+
+                scrollRectTransfrom.sizeDelta = new Vector2((float)200, (float)215.2);
+                scrollRect.vertical = true;
             }
         }
 
-        public static GameObject AddTextToWindow(WindowLibrary.Window Window, string text, int fontSize, Vector3 textPosition)
+        public static GameObject AddTextToObject(GameObject parent, string text, int fontSize, Vector3 textPosition, string template = "inspect_unit")
         {
-            GameObject textTemplate = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{Window.scrollWindow.name}/Background/Name");
-            GameObject textObject = UnityEngine.Object.Instantiate(textTemplate, Window.scrollWindow.gameObject.transform);
+            GameObject textTemplate = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{template}/Background/Name");
+            GameObject textObject = UnityEngine.Object.Instantiate(textTemplate, parent.transform);
             textObject.SetActive(true);
 
-            var textComponent = textObject.GetComponent<Text>();
+            Text textComponent = textObject.GetComponent<Text>();
             textComponent.text = text;
             textComponent.fontSize = fontSize;
-            var textRect = textObject.GetComponent<RectTransform>();
+            RectTransform textRect = textObject.GetComponent<RectTransform>();
             textRect.position = new Vector3(0, 0, 0);
-            textRect.localPosition = textPosition;
             textRect.sizeDelta = new Vector2(textComponent.preferredWidth, textComponent.preferredHeight);
+            textRect.localPosition = textPosition;
 
             return textObject;
         }
