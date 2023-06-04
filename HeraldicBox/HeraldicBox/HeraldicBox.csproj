@@ -47,7 +47,6 @@
     <Compile Include="Member.cs" />
     <Compile Include="Mojai\Libraries\Other\DropsLibrary.cs" />
     <Compile Include="Mojai\Libraries\UI\TabLibrary.cs" />
-    <Compile Include="Util.cs" />
     <Content Include="Mojai\Libraries\UI\TODO.txt" />
     <Compile Include="Mojai\Libraries\UI\WindowLibrary.cs" />
     <Compile Include="Main.cs" />
@@ -58,6 +57,9 @@
     <Compile Include="Test.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=2.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.2.2.2\lib\net472\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\worldbox\worldbox_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>

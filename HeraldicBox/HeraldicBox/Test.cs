@@ -29,11 +29,14 @@ namespace HeraldicBox
         public static void debug_2(WorldTile pTile = null, string pDropID = null)
         {
             MapBox.instance.getObjectsInChunks(pTile, 1, MapObjectType.Actor);
-            Actor actor = (Actor)MapBox.instance.temp_map_objects[0];
-            HeraldicComponent component = actor.gameObject.GetComponent<HeraldicComponent>();
-            if (component != null)
+            for (int i = 0; i < MapBox.instance.temp_map_objects.Count; i++)
             {
-                new HeraldicBoxUI.inspect_family_window(component.Heraldic);
+                Actor actor = (Actor)MapBox.instance.temp_map_objects[i];
+                HeraldicComponent component = actor.gameObject.GetComponent<HeraldicComponent>();
+                if (component != null)
+                {
+                    new HeraldicBoxUI.inspect_family_window(component.Heraldic);
+                }
             }
         }
 
