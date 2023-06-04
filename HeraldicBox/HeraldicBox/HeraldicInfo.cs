@@ -11,7 +11,7 @@ namespace HeraldicBox
     {
         //private static List<HeraldicInfo> allInfo = new List<HeraldicInfo>();
 
-        public bool IsDead = false;
+        public string actorName = "Unknown";
         public Actor actor;
         public ActorData actorData;
         public List<HeraldicInfo> childs = new List<HeraldicInfo>();

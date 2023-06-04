@@ -23,6 +23,7 @@ namespace HeraldicBox
                 component.Heraldic = new HeraldicInfo(actor_data, actor);
                 Family family = new Family(component.Heraldic);
                 WorldTip.showNowTop("Family Created");
+                component.Heraldic.actorName = actor.getName();
             }
         }
 

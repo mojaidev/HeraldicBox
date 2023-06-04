@@ -112,7 +112,7 @@ namespace HeraldicBox
 			return false;
 		}
 
-		public static bool finalizeActor_Prefix(string pStats, Actor pActor, WorldTile pTile, float pZHeight = 0f)
+		public static void finalizeActor_Postfix(string pStats, Actor pActor, WorldTile pTile, float pZHeight = 0f)
 		{
 			ActorData actor_data = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
 
@@ -123,9 +123,9 @@ namespace HeraldicBox
 					HeraldicComponent newComponent = pActor.gameObject.AddComponent<HeraldicComponent>();
 					newComponent.Heraldic = heraldicInfo;
 					heraldicInfo.actor = pActor;
+					heraldicInfo.actorName = pActor.getName();
                 }
             }
-			return true;
 		}
 
 		// ====================================================

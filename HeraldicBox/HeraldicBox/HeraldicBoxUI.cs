@@ -79,17 +79,20 @@ namespace HeraldicBox
                 void inspect_family_window_button()
                 {
                     // scrollWindow.hide() is better but ill use the postfixed one by now
-                    if(window.referenced.actor == info.actor)
+                    if(window.referenced == info)
                     {
-                        window.window.scrollWindow.clickHide();
-                        Config.selectedUnit = info.actor;
-                        ScrollWindow.moveAllToLeftAndRemove(true);
-                        ScrollWindow.showWindow("inspect_unit");
+                        if(window.referenced.actor != null)
+                        {
+                            window.window.scrollWindow.clickHide();
+                            Config.selectedUnit = info.actor;
+                            ScrollWindow.moveAllToLeftAndRemove(true);
+                            ScrollWindow.showWindow("inspect_unit");
+                        }
                     }
                     else
                     {
                         window.window.scrollWindow.clickHide();
-                        new inspect_family_window(info.actor.gameObject.GetComponent<HeraldicComponent>().Heraldic);
+                        new inspect_family_window(info);
                     }
                 }
 
@@ -120,7 +123,7 @@ namespace HeraldicBox
                     }
                     else
                     {
-                        button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, Resources.Load<Sprite>("ui/icons/dead"), "Dead Person", "later", pos, ButtonType.Click, window.window.content.transform);
+                        button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, Resources.Load<Sprite>("ui/icons/dead"), pInfo.actorName, "later", pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
                     }
                 }
             }
