@@ -10,8 +10,10 @@ namespace HeraldicBox
     {
         public static void Start()
         {
-            Test.Init();
-            HeraldicBoxUI.Setup();
+            //Test.Init();
+            Patches.Setup();
+            HeraldicBoxActions.Setup();
+            HeraldicBoxUI.SetupAll();
         }
     }
 }

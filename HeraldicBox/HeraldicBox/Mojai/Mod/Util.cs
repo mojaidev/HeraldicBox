@@ -1,7 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.IO;
-
-namespace Mojai.Mod
+﻿namespace Mojai.Mod
 {
     class Config
     {

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Mojai.Libraries.UI;
-using System.Threading;
+﻿using Mojai.Libraries.UI;
 using UnityEngine;
 using NCMS.Utils;
 using ReflectionUtility;
+using Mojai.Libraries.Other;
 
 namespace HeraldicBox
 {
@@ -43,10 +39,9 @@ namespace HeraldicBox
 
         public static void Init()
         {
-            Patches.Setup();
             TabLibrary.Tab debugTab = new TabLibrary.Tab("tab_debug_heraldic", "HeraldicBox [DEBUG TAB]", Resources.Load<Sprite>("ui/icons/new_icon"), new Vector2(1f, 1f), new Vector2(150, 49.62f));
-            Mojai.Libraries.Other.DropsLibrary.Drop drop1 = new Mojai.Libraries.Other.DropsLibrary.Drop("debugdrop1", new DropsAction(debug_1), "blessing");
-            Mojai.Libraries.Other.DropsLibrary.Drop drop2 = new Mojai.Libraries.Other.DropsLibrary.Drop("debugdrop2", new DropsAction(debug_2), "blessing");
+            mDropsLibrary.Drop drop1 = new mDropsLibrary.Drop("debugdrop1", new DropsAction(debug_1));
+            mDropsLibrary.Drop drop2 = new mDropsLibrary.Drop("debugdrop2", new DropsAction(debug_2));
             PowerButton debugButton1 = PowerButtons.CreateButton("debugdrop1", Resources.Load<Sprite>("ui/icons/new_icon"), "Debug Button", "Debug Button", Vector2.zero, ButtonType.GodPower);
             PowerButton debugButton2 = PowerButtons.CreateButton("debugdrop2", Resources.Load<Sprite>("ui/icons/new_icon"), "Debug Button 2", "Debug Button", Vector2.zero, ButtonType.GodPower);
             TabLibrary.Tab.AddButtonToTab(debugButton1, "tab_debug_heraldic", new Vector2(211.2f, 18));

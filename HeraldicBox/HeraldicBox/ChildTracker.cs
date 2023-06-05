@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using ai;
-using ai.behaviours;
 using ReflectionUtility;
-using UnityEngine;
 
 
 namespace HeraldicBox
