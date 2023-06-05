@@ -43,7 +43,7 @@
     <Compile Include="HeraldicBoxUI.cs" />
     <Compile Include="HeraldicComponent.cs" />
     <Compile Include="HeraldicInfo.cs" />
-    <Compile Include="mDropsLibrary.cs" />
+    <Compile Include="Mojai\Libraries\Other\mDropsLibrary.cs" />
     <Compile Include="Mojai\Libraries\UI\TabLibrary.cs" />
     <Compile Include="Mojai\Libraries\UI\WindowLibrary.cs" />
     <Compile Include="Main.cs" />
@@ -73,8 +73,6 @@
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\worldbox\worldbox_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Mojai\Libraries\Other\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

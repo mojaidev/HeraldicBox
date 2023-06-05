@@ -109,7 +109,15 @@ namespace HeraldicBox
                     {
                         ActorData actor_data = Reflection.GetField(typeof(Actor), info.actor, "data") as ActorData;
 
-                        button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, null, info.actor.getName(), "later", pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
+                        if(info.actor.city != null)
+                        {
+                            button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, null, info.actor.getName(), "Living | " + info.actor.city.getCityName(), pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
+                        }
+                        else
+                        {
+                            button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, null, info.actor.getName(), "Living | Nowhere", pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
+                        }
+                       
                         GameObject loader_object = new GameObject("loader");
                         //loader_object.transform.parent = window.content.transform; // <-- Debugging puroposes
                         UnitAvatarLoader loader = loader_object.AddComponent<UnitAvatarLoader>() as UnitAvatarLoader;
@@ -128,7 +136,7 @@ namespace HeraldicBox
                     }
                     else
                     {
-                        button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, Resources.Load<Sprite>("ui/icons/dead"), pInfo.actorName, "later", pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
+                        button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, Resources.Load<Sprite>("ui/icons/dead"), pInfo.actorName, "Dead", pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
                     }
                 }
             }
