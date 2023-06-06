@@ -1,5 +1,6 @@
 ﻿using ReflectionUtility;
 using System.Collections.Generic;
+using System;
 
 namespace HeraldicBox
 { 
@@ -48,14 +49,23 @@ namespace HeraldicBox
         // FAMILY SECTION
         // ====================================================
 
+        public static List<Family> families = new List<Family>();
+
+        [NonSerialized] public List<HeraldicInfo> members = new List<HeraldicInfo>();
         public string familyName, lastName;
-        public List<HeraldicInfo> members = new List<HeraldicInfo>();
+
+        public string publicID; // <-- This is for the save system.
 
         public Family(HeraldicInfo pFounder)
         {
-            familyName = "The " + pFounder.actor.getName();
-            lastName = pFounder.actor.getName();
-            addToFamily(pFounder, this);
+            if(pFounder != null)
+            {
+                publicID = Guid.NewGuid().ToString();
+                familyName = "The " + pFounder.actor.getName();
+                lastName = pFounder.actor.getName();
+                families.Add(this);
+                addToFamily(pFounder, this);
+            }
         }
 
         public static Family addToFamily(HeraldicInfo pInfo, Family pFamily)

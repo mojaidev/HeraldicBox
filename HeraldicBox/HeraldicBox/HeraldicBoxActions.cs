@@ -36,7 +36,7 @@ namespace HeraldicBox
                 HeraldicComponent component = actor.gameObject.AddComponent<HeraldicComponent>();
                 component.Heraldic = new HeraldicInfo(actor_data, actor);
                 new Family(component.Heraldic);
-                WorldTip.showNowTop(actor.getName() + " Created a beautiful family");
+                WorldTip.instance.showToolbarText(actor.getName() + " Created a beautiful family");
                 component.Heraldic.actorName = actor.getName();
             }
             return true;
