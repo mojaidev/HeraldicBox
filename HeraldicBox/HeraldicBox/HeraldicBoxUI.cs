@@ -29,7 +29,7 @@ namespace HeraldicBox
             //
             // ====================================================
 
-            TabLibrary.Tab tab = new TabLibrary.Tab("tab_heraldicbox", "HeraldicBox", Resources.Load<Sprite>("ui/icons/tab_heraldic"), new Vector2(1f, 1f), new Vector2(193, 49.62f));
+            TabLibrary.Tab tab = new TabLibrary.Tab("tab_heraldicbox", "HeraldicBox", Resources.Load<Sprite>("ui/icons/tab_heraldic"), new Vector2(1f, 1f), new Vector2(-400, 49.62f));
             PowerButton newfamily_button = PowerButtons.CreateButton("heraldic_newfamily_drop", Resources.Load<Sprite>("ui/icons/new_family_icon"), "New Family", "Create a new famliy by dropping this.", Vector2.zero, ButtonType.GodPower);
             PowerButton inspectfamily_drop_button = PowerButtons.CreateButton("heraldic_inspectfamily_drop", Resources.Load<Sprite>("ui/icons/inspect_icon"), "Inspect Family", "Get a unit's family tree by dropping this.", Vector2.zero, ButtonType.GodPower);
             PowerButton settings_button = PowerButtons.CreateButton("heraldic_settings", Resources.Load<Sprite>("ui/icons/options_icon"), "Settings", "Modify HeraldicBox behaviour by changing the settings.", Vector2.zero);
@@ -101,7 +101,7 @@ namespace HeraldicBox
                     }
                 }
 
-                public avatarButton(HeraldicInfo pInfo, inspect_family_window pWindow, Vector2 pos, float size = 32) {
+                public avatarButton(HeraldicInfo pInfo, inspect_family_window pWindow, Vector2 pos, int importance = 0, float size = 32) {
                     info = pInfo;
                     window = pWindow;
                     String button_uuid = Guid.NewGuid().ToString();
@@ -111,12 +111,28 @@ namespace HeraldicBox
 
                         if(info.actor.city != null)
                         {
-                            button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, null, info.actor.getName(), "Living | " + info.actor.city.getCityName(), pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
+                            button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, null, pInfo.actorName, "Living | " + info.actor.city.getCityName(), pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
                         }
                         else
                         {
-                            button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, null, info.actor.getName(), "Living | Nowhere", pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
+                            button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, null, pInfo.actorName, "Living | Nowhere", pos, ButtonType.Click, window.window.content.transform, inspect_family_window_button);
                         }
+
+                        if(importance == 1)
+                        {
+                            button.gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_1");
+                        }
+
+                        /*
+                        if(importance == 2)
+                        {
+                            // this looks so fucking cool...
+                            button.gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_1");
+                            GameObject goldRing = new GameObject("gold_ring_FUCKYEAH_THIS_LOOKS_AWESOME");
+                            goldRing.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_2");
+                            goldRing.transform.parent = button.gameObject.transform;
+                        }
+                        */
                        
                         GameObject loader_object = new GameObject("loader");
                         //loader_object.transform.parent = window.content.transform; // <-- Debugging puroposes
@@ -151,53 +167,83 @@ namespace HeraldicBox
                     // this should be fixed but its ok for now since i dont think someone will open like 10000 windows.
 
                     String window_uuid = Guid.NewGuid().ToString();
-                    window = new WindowLibrary.EasyScrollWindow("inspect_family_window_" + window_uuid, "Family Inspector");
+                    window = new WindowLibrary.EasyScrollWindow("inspect_family_window_" + window_uuid, pInfo.actorName);
+                    window.UpdateVerticalRect((float)220);
 
-                    avatarButton portrait = new avatarButton(pInfo, this, new Vector2(100, -30), 45);
+                    avatarButton portrait = new avatarButton(pInfo, this, new Vector2(40, -30), 1, 45);
+
+                    GameObject parents_inner = new GameObject("parents_inner");
+                    parents_inner.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/windowInnerSliced");
+                    parents_inner.transform.parent = window.content.transform;
+                    parents_inner.transform.localScale = new Vector3(1, 1, 1);
+                    parents_inner.transform.localPosition = new Vector3(105, -100, 0);
+                    parents_inner.GetComponent<RectTransform>().sizeDelta = new Vector3(170, 40);
 
                     if (pInfo.father != null)
                     {
-                        new avatarButton(pInfo.father, this, new Vector2(80, -80));
+                        GameObject father_button = new avatarButton(pInfo.father, this, Vector2.zero, 2).button.gameObject;
+                        father_button.transform.parent = parents_inner.transform;
+                        father_button.transform.localPosition = new Vector2(-60, 0);
                     }
 
                     if (pInfo.mother != null)
                     {
-                        new avatarButton(pInfo.mother, this, new Vector2(115, -80));
+                        GameObject mother_button = new avatarButton(pInfo.mother, this, Vector2.zero, 2).button.gameObject;
+                        mother_button.transform.parent = parents_inner.transform;
+                        mother_button.transform.localPosition = new Vector2(-25, 0);
                     }
 
-                    window.UpdateVerticalRect((float)220);
 
-                    float lastX = 40;
-                    float lastY = -150;
-                    float lastVerticalRectMinus = -220;
-                    float lastVerticalRect = 220;
-
+                    GameObject children_inner = new GameObject("children_inner");
+                    children_inner.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/windowInnerSliced");
+                    children_inner.transform.parent = window.content.transform;
+                    children_inner.transform.localScale = new Vector3(1, 1, 1);
+                    children_inner.transform.localPosition = new Vector3(105, -160, 0);
+                    children_inner.GetComponent<RectTransform>().sizeDelta = new Vector3(170, 40);
+                    float lastX = -60;
+                    float lastY = -170;
                     foreach (HeraldicInfo child in pInfo.childs)
                     {
-                        new avatarButton(child, this, new Vector2(lastX, lastY));
-                        if (lastX < 145)
+                        GameObject childButton = new avatarButton(child, this, Vector2.zero).button.gameObject;
+                        childButton.transform.parent = children_inner.transform;
+                        childButton.transform.localPosition = new Vector2(lastX, 0);
+
+                        if (lastX < 45)
                         {
                             lastX += 35;
                         }
                         else
                         {
-                            lastX = 40;
-                            lastY += -35;
-                        }
+                            lastX = -30;
 
-                        if (lastY == lastVerticalRectMinus)
-                        {
-                            lastVerticalRectMinus += -35;
-                            lastVerticalRect += 35;
-                            window.UpdateVerticalRect(lastVerticalRect);
+                            children_inner = new GameObject("children_inner");
+                            children_inner.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/windowInnerSliced");
+                            children_inner.transform.parent = window.content.transform;
+                            children_inner.transform.localScale = new Vector3(1, 1, 1);
+                            children_inner.transform.localPosition = new Vector3(105, lastY + -30, 0);
+                            children_inner.GetComponent<RectTransform>().sizeDelta = new Vector3(170, 40);
+                            window.UpdateVerticalRect(window.content.GetComponent<RectTransform>().sizeDelta.y + 70);
                         }
 
                     }
 
                     // I dont know why but when i put the text before UpdateVerticalRect the text x size is updated to 90, WTF?
+                    // UPDATE: it happens with all the objects idk why
 
-                    WindowLibrary.AddTextToObject(window.content, "Parents: ", 10, new Vector3(40, -70, 0), window.scrollWindow.name);
-                    WindowLibrary.AddTextToObject(window.content, "Childs: ", 10, new Vector3((float)36.30, -120, 0), window.scrollWindow.name);
+                    GameObject info_inner = new GameObject("info_inner");
+                    info_inner.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/windowInnerSliced");
+                    info_inner.transform.parent = window.content.transform;
+                    info_inner.transform.localScale = new Vector3(1, 1, 1);
+                    info_inner.transform.localPosition = new Vector3(130, -30, 0);
+                    info_inner.GetComponent<RectTransform>().sizeDelta = new Vector3(120, 45);
+
+                    GameObject textStat1 = WindowLibrary.AddTextToObject(window.content, "Parents: ", 10, new Vector3(40, -70, 0), window.scrollWindow.name);
+                    GameObject textStat2 = WindowLibrary.AddTextToObject(window.content, "Children: ", 10, new Vector3(40, -130, 0), window.scrollWindow.name);
+                    textStat1.AddComponent<Shadow>();
+                    textStat2.AddComponent<Shadow>();
+                    // The colors right down are: #FFBC66FF
+                    textStat1.GetComponent<Text>().color = new Color(1f, 0.7372549f, 0.4f, 1f);
+                    textStat2.GetComponent<Text>().color = new Color(1f, 0.7372549f, 0.4f, 1f);
 
                     window.scrollWindow.show();
                     openedWindow = this;
