@@ -75,12 +75,12 @@ namespace HeraldicBox
 			{
 				newInfo = new HeraldicInfo(actorData, null, null, heraldicComponent1.Heraldic);
 				RegisterA.Add(newInfo);
-				newInfo.father.childs.Add(newInfo);
+				newInfo.father.children.Add(newInfo);
 			}
 			if (heraldicComponent2 != null)
 			{
 				newInfo.mother = heraldicComponent2.Heraldic;
-				newInfo.mother.childs.Add(newInfo);
+				newInfo.mother.children.Add(newInfo);
 			}
 
 			if (actor2 != null)
@@ -121,7 +121,7 @@ namespace HeraldicBox
 					HeraldicComponent newComponent = pActor.gameObject.AddComponent<HeraldicComponent>();
 					newComponent.Heraldic = heraldicInfo;
 					heraldicInfo.actor = pActor;
-					heraldicInfo.actorName = pActor.getName();
+					heraldicInfo.TryUpdateActorInfo();
                 }
             }
 		}
