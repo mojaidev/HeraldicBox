@@ -43,10 +43,46 @@ namespace HeraldicBox
 			ActorData actor_data2 = null;
 			if (_possibleParents.Count > 0)
 			{
-				actor2 = _possibleParents.Pop<Actor>();
-				actor_data2 = Reflection.GetField(typeof(Actor), actor2, "data") as ActorData;
-				heraldicComponent2 = actor2.gameObject.GetComponent<HeraldicComponent>();
+                if (heraldicComponent1)
+                {
+					for(int i = 0; i < _possibleParents.Count; i++)
+                    {
+						Actor pActor = _possibleParents[i];
+						if(pActor.gameObject.GetComponent<HeraldicComponent>() != null)
+                        {
+							if(pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic.family != heraldicComponent1.Heraldic.family)
+                            {
+								actor2 = pActor;
+								actor_data2 = Reflection.GetField(typeof(Actor), actor2, "data") as ActorData;
+								heraldicComponent2 = actor2.gameObject.GetComponent<HeraldicComponent>();
+								_possibleParents.Remove(pActor);
+							}
+                        }
+                    }
+                }
 			}
+
+			ActorData actorData = new ActorData();
+
+			HeraldicInfo newInfo = null;
+			if (heraldicComponent1 != null)
+			{
+				if (heraldicComponent2 == null && HeraldicBoxSettings.Asexual_Reproduction == false)
+				{
+					__result = false;
+					return false;
+				}
+
+				newInfo = new HeraldicInfo(actorData, null, null, heraldicComponent1.Heraldic);
+				RegisterA.Add(newInfo);
+				newInfo.father.children.Add(newInfo);
+			}
+			if (heraldicComponent2 != null)
+			{
+				newInfo.mother = heraldicComponent2.Heraldic;
+				newInfo.mother.children.Add(newInfo);
+			}
+
 			ResourceAsset foodItem = Reflection.CallMethod(pCity, "getFoodItem", (string)null) as ResourceAsset;
 			pCity.CallMethod("eatFoodItem", foodItem.id);
 			pCity.status.housingFree--;
@@ -59,7 +95,7 @@ namespace HeraldicBox
 			Race actor_race = Reflection.GetField(typeof(Actor), actor, "race") as Race;
 			MapBox world = MapBox.instance;
 			ActorAsset asset = actor.asset;
-			ActorData actorData = new ActorData();
+			
 			actorData.created_time = world.getCreationTime();
 			actorData.cityID = pCity.data.id;
 			actorData.id = world.mapStats.getNextId("unit");
@@ -69,19 +105,6 @@ namespace HeraldicBox
 			actorData.CallMethod("inheritTraits", actor_data.traits);
 			actorData.hunger = asset.maxHunger / 2;
 			actor_data.makeChild(world.getCurWorldTime());
-
-			HeraldicInfo newInfo = null;
-			if (heraldicComponent1 != null)
-			{
-				newInfo = new HeraldicInfo(actorData, null, null, heraldicComponent1.Heraldic);
-				RegisterA.Add(newInfo);
-				newInfo.father.children.Add(newInfo);
-			}
-			if (heraldicComponent2 != null)
-			{
-				newInfo.mother = heraldicComponent2.Heraldic;
-				newInfo.mother.children.Add(newInfo);
-			}
 
 			if (actor2 != null)
 			{

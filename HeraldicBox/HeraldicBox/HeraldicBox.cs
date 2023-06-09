@@ -10,6 +10,7 @@ namespace HeraldicBox
     {
         public static void Start()
         {
+            //Mojai.Mod.Util.Print("GAME TARGET VERSION: " + Config.versionCodeText);
             Test.Init();
             Patches.Setup();
             HeraldicBoxActions.Setup();

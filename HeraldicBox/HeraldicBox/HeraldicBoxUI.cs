@@ -135,7 +135,6 @@ namespace HeraldicBox
                         goldRing.transform.parent = button.gameObject.transform;
                     }
                     */
-                    Mojai.Mod.Util.Print(info.actorName + " THE FUCK!!!???? 4");
                     button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector3(size, size, 0);
                 }
             }
@@ -186,7 +185,7 @@ namespace HeraldicBox
                     children_inner.transform.localPosition = new Vector3(105, -160, 0);
                     children_inner.GetComponent<RectTransform>().sizeDelta = new Vector3(170, 40);
                     float lastX = -60;
-                    float lastY = -170;
+                    float lastY = -160;
                     foreach (HeraldicInfo child in pInfo.children)
                     {
                         GameObject childButton = new avatarButton(child, children_inner, this, new Vector2(lastX, 0)).button.gameObject;
@@ -198,18 +197,16 @@ namespace HeraldicBox
                         {
                             lastX = -60;
 
-                            if(pInfo.children.Count > 4)
-                            {
-                                children_inner = new GameObject("children_inner");
-                                children_inner.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/windowInnerSliced");
-                                children_inner.transform.SetParent(window.content.transform);
-                                children_inner.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
-                                children_inner.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
-                                children_inner.transform.localScale = new Vector3(1, 1, 1);
-                                children_inner.transform.localPosition = new Vector3(105, lastY + -35, 0);
-                                children_inner.GetComponent<RectTransform>().sizeDelta = new Vector3(170, 40);
-                                window.UpdateVerticalRect(window.content.GetComponent<RectTransform>().sizeDelta.y + 70);
-                            }
+                            children_inner = new GameObject("children_inner");
+                            children_inner.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/windowInnerSliced");
+                            children_inner.transform.SetParent(window.content.transform);
+                            children_inner.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
+                            children_inner.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
+                            children_inner.transform.localScale = new Vector3(1, 1, 1);
+                            children_inner.transform.localPosition = new Vector3(105, lastY + -45, 0);
+                            children_inner.GetComponent<RectTransform>().sizeDelta = new Vector3(170, 40);
+                            lastY += -45;
+                            window.UpdateVerticalRect(window.content.GetComponent<RectTransform>().sizeDelta.y + 50);
                         }
 
                     }
