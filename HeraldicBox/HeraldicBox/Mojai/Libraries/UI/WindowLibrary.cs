@@ -10,6 +10,23 @@ namespace Mojai.Libraries.UI
 {
     class WindowLibrary
     {
+        public class EasyInner
+        {
+            public GameObject inner;
+
+            public EasyInner(String name, Transform parent, Vector3 size, Vector3 position)
+            {
+                inner = new GameObject(name);
+                inner.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/windowInnerSliced");
+                inner.transform.SetParent(parent);
+                inner.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 1);
+                inner.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
+                inner.transform.localScale = new Vector3(1, 1, 1);
+                inner.transform.localPosition = position;
+                inner.GetComponent<RectTransform>().sizeDelta = size;
+            }
+        }
+
         public class EasyScrollWindow
         {
             public ScrollWindow scrollWindow;
@@ -18,6 +35,15 @@ namespace Mojai.Libraries.UI
             private ScrollRect scrollRect;
             private RectTransform scrollRectTransfrom;
             private RectTransform contentRectTransform;
+
+            public void Clear()
+            {
+                for (int i = 0; i < content.transform.childCount; i++)
+                {
+                    GameObject obj = content.transform.GetChild(i).gameObject;
+                    obj.SetActive(false);
+                }
+            }
 
             public void UpdateVerticalRect(float newSize)
             {

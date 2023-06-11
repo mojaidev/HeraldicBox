@@ -1,6 +1,7 @@
 ﻿using ReflectionUtility;
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 namespace HeraldicBox
 { 
@@ -50,18 +51,21 @@ namespace HeraldicBox
         // ====================================================
 
         public static List<Family> families = new List<Family>();
-
-        [NonSerialized] public List<HeraldicInfo> members = new List<HeraldicInfo>();
+        public int averageReputation;
+        public Color familyColor = Color.green;
+        public Sprite shield = Resources.Load<Sprite>("ui/heraldic_banners/2");
         public string familyName, lastName;
 
         public string publicID; // <-- This is for the save system.
+
+        [NonSerialized] public List<HeraldicInfo> members = new List<HeraldicInfo>();
 
         public Family(HeraldicInfo pFounder)
         {
             if(pFounder != null)
             {
                 publicID = Guid.NewGuid().ToString();
-                familyName = "The " + pFounder.actor.getName();
+                familyName = "The " + pFounder.actor.getName() + "'s Family";
                 lastName = pFounder.actor.getName();
                 families.Add(this);
                 addToFamily(pFounder, this);

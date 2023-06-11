@@ -36,8 +36,9 @@ namespace HeraldicBox
                 HeraldicComponent component = actor.gameObject.AddComponent<HeraldicComponent>();
                 component.Heraldic = new HeraldicInfo(actor_data, actor);
                 new Family(component.Heraldic);
-                WorldTip.instance.showToolbarText(actor.getName() + " Created a beautiful family");
-                component.Heraldic.actorName = actor.getName();
+                WorldTip.instance.showToolbarText(actor.getName() + " Lineage starts here");
+                component.Heraldic.TryUpdateActorInfo();
+                CornerAye.instance.startAye(); // <-- Huh?
             }
             return true;
         }
@@ -55,6 +56,16 @@ namespace HeraldicBox
                 }
             }
             return true;
+        }
+
+        public static void show_index()
+        {
+            new HeraldicBoxUI.family_index_window();
+        }
+
+        public static void show_settings()
+        {
+            HeraldicBoxUI.settings_window.show();
         }
     }
 }

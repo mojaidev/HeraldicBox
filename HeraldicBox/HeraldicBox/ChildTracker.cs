@@ -12,7 +12,7 @@ namespace HeraldicBox
 	// ====================================================
 
 	class ChildTracker
-    {
+	{
 		private static List<HeraldicInfo> RegisterA = new List<HeraldicInfo>();
 
 		// ====================================================
@@ -43,23 +43,29 @@ namespace HeraldicBox
 			ActorData actor_data2 = null;
 			if (_possibleParents.Count > 0)
 			{
-                if (heraldicComponent1)
-                {
-					for(int i = 0; i < _possibleParents.Count; i++)
-                    {
+				if (heraldicComponent1)
+				{
+					for (int i = 0; i < _possibleParents.Count; i++)
+					{
 						Actor pActor = _possibleParents[i];
-						if(pActor.gameObject.GetComponent<HeraldicComponent>() != null)
+						actor_data2 = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
+						if (HeraldicBoxSettings.LGBT_Reproduction == false && actor_data2.gender == actor_data.gender)
                         {
-							if(pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic.family != heraldicComponent1.Heraldic.family)
-                            {
-								actor2 = pActor;
-								actor_data2 = Reflection.GetField(typeof(Actor), actor2, "data") as ActorData;
-								heraldicComponent2 = actor2.gameObject.GetComponent<HeraldicComponent>();
-								_possibleParents.Remove(pActor);
-							}
                         }
-                    }
-                }
+                        else
+                        {
+							if (pActor.gameObject.GetComponent<HeraldicComponent>() != null)
+							{
+								if (pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic.family != heraldicComponent1.Heraldic.family)
+								{
+									actor2 = pActor;
+									heraldicComponent2 = actor2.gameObject.GetComponent<HeraldicComponent>();
+									_possibleParents.Remove(pActor);
+								}
+							}
+						}
+					}
+				}
 			}
 
 			ActorData actorData = new ActorData();
@@ -95,7 +101,7 @@ namespace HeraldicBox
 			Race actor_race = Reflection.GetField(typeof(Actor), actor, "race") as Race;
 			MapBox world = MapBox.instance;
 			ActorAsset asset = actor.asset;
-			
+
 			actorData.created_time = world.getCreationTime();
 			actorData.cityID = pCity.data.id;
 			actorData.id = world.mapStats.getNextId("unit");
@@ -138,15 +144,15 @@ namespace HeraldicBox
 			ActorData actor_data = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
 
 			foreach (HeraldicInfo heraldicInfo in RegisterA)
-            {
-				if(heraldicInfo.actorData == actor_data)
-                {
+			{
+				if (heraldicInfo.actorData == actor_data)
+				{
 					HeraldicComponent newComponent = pActor.gameObject.AddComponent<HeraldicComponent>();
 					newComponent.Heraldic = heraldicInfo;
 					heraldicInfo.actor = pActor;
 					heraldicInfo.TryUpdateActorInfo();
-                }
-            }
+				}
+			}
 		}
 
 		// ====================================================
@@ -199,8 +205,8 @@ namespace HeraldicBox
 			ActorData actor_data = Reflection.GetField(typeof(Actor), pParent1, "data") as ActorData;
 			ActorData actor_data2 = null;
 
-			if(pParent2 != null)
-            {
+			if (pParent2 != null)
+			{
 				actor_data2 = Reflection.GetField(typeof(Actor), pParent2, "data") as ActorData;
 			}
 
@@ -245,5 +251,5 @@ namespace HeraldicBox
 			}
 			return result;
 		}
-    }
+	}
 }

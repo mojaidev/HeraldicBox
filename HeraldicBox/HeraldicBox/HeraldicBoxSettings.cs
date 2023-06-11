@@ -14,6 +14,7 @@ namespace HeraldicBox
         // ====================================================
 
         public static bool Asexual_Reproduction = false;
+        public static bool LGBT_Reproduction = false;
 
         // ====================================================
         // UI SETTINGS

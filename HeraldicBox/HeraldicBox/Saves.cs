@@ -16,8 +16,8 @@ namespace HeraldicBox
 
             foreach(Family pFamily in families)
             {
-                //Family.families.Pop();
-                //families.Add(pFamily);
+                Family.families.Pop();
+                families.Add(pFamily);
             }
 
             foreach (Actor pActor in World.world.units)
