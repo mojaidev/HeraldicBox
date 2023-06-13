@@ -1,15 +1,33 @@
 ﻿using System;
 using NCMS.Utils;
+using ReflectionUtility;
 using UnityEngine;
 using UnityEngine.UI;
-using ReflectionUtility;
-using NCMS;
-using System.Collections.Generic;
 
 namespace Mojai.Libraries.UI
 {
     class WindowLibrary
     {
+        public class EasyInputField
+        {
+            public GameObject Element;
+            public NameInput Input;
+
+            public EasyInputField(Transform parent, string value, Vector3 position, UnityEngine.Events.UnityAction<string> pAction = null)
+            {
+                // This is to get the NameInputElement from 'inspect_unit' cus when game starts it doesnt exist.
+                Reflection.CallStaticMethod(typeof(ScrollWindow), "checkWindowExist", "inspect_unit");
+                ScrollWindow.get("inspect_unit").gameObject.SetActive(false);
+
+                Element = UnityEngine.Object.Instantiate(GameObjects.FindEvenInactive("NameInputElement"), parent.transform);
+                Input = Element.GetComponent<NameInput>();
+                Element.transform.localPosition = position;
+
+                Input.setText(value);
+                Input.addListener(pAction);
+            }
+        }
+
         public class EasyInner
         {
             public GameObject inner;

@@ -1,7 +1,6 @@
 ﻿using Mojai.Libraries.UI;
 using UnityEngine;
 using NCMS.Utils;
-using ReflectionUtility;
 using UnityEngine.UI;
 using System;
 
@@ -30,27 +29,108 @@ namespace HeraldicBox
             //
             // ====================================================
 
-            TabLibrary.Tab tab = new TabLibrary.Tab("tab_heraldicbox", "HeraldicBox", Resources.Load<Sprite>("ui/icons/tab_heraldic"), new Vector2(1f, 1f), new Vector2(-400, 49.62f));
+            TabLibrary.Tab tab = new TabLibrary.Tab("tab_heraldicbox", "HeraldicBox", Resources.Load<Sprite>("ui/icons/tab_heraldic"), new Vector2(1f, 1f), new Vector2(HeraldicBoxSettings.instance.tab_HeraldicBox_Position, 49.62f));
+
             PowerButton newfamily_button = PowerButtons.CreateButton("heraldic_newfamily_drop", Resources.Load<Sprite>("ui/icons/new_family_icon"), "New Family", "Create a new famliy by dropping this.", Vector2.zero, ButtonType.GodPower);
+            PowerButton tool_deleteall_families_button = PowerButtons.CreateButton("tool_deleteall_families", Resources.Load<Sprite>("ui/icons/deleteall_icon"), "Delete Orphans", "Delete all units without a family.", Vector2.zero, ButtonType.GodPower);
             PowerButton inspectfamily_drop_button = PowerButtons.CreateButton("heraldic_inspectfamily_drop", Resources.Load<Sprite>("ui/icons/inspect_icon"), "Inspect Family", "Get a unit's family tree by dropping this.", Vector2.zero, ButtonType.GodPower);
             PowerButton family_index_button = PowerButtons.CreateButton("family_index_button", Resources.Load<Sprite>("ui/icons/index_icon"), "Family Index", "Track down families [BETA].", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_index);
             PowerButton aboutme_button = PowerButtons.CreateButton("aboutme_button_mojai", Resources.Load<Sprite>("ui/icons/mojai_author_icon"), "About Me", "Ñ", Vector2.zero);
             PowerButton settings_button = PowerButtons.CreateButton("heraldic_settings", Resources.Load<Sprite>("ui/icons/options_icon"), "Settings", "Modify HeraldicBox behaviour by changing the settings.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_settings);
 
             TabLibrary.Tab.AddButtonToTab(newfamily_button,                         "tab_heraldicbox", new Vector2(211.2f, 18));
-            TabLibrary.Tab.AddButtonToTab(inspectfamily_drop_button,                "tab_heraldicbox", new Vector2(254.2f, 18));
-            TabLibrary.Tab.AddButtonToTab(family_index_button,                      "tab_heraldicbox", new Vector2(297.2f, 18));
-            TabLibrary.Tab.AddButtonToTab(settings_button,                          "tab_heraldicbox", new Vector2(340.2f, 18));
+            TabLibrary.Tab.AddButtonToTab(tool_deleteall_families_button,           "tab_heraldicbox", new Vector2(254.2f, 18));
+            TabLibrary.Tab.AddButtonToTab(inspectfamily_drop_button,                "tab_heraldicbox", new Vector2(297.2f, 18));
+            TabLibrary.Tab.AddButtonToTab(family_index_button,                      "tab_heraldicbox", new Vector2(340.2f, 18));
+            TabLibrary.Tab.AddButtonToTab(settings_button,                          "tab_heraldicbox", new Vector2(383.2f, 18));
             TabLibrary.Tab.AddButtonToTab(aboutme_button,                           "tab_heraldicbox", new Vector2(803.2f, 18));
+        }
+
+        private class HeraldicAvatarButton
+        {
+            public PowerButton button;
+            private HeraldicInfo info;
+
+            public HeraldicAvatarButton(HeraldicInfo pInfo, GameObject parent, Vector2 pos, int importance = 0, float size = 32, UnityEngine.Events.UnityAction<HeraldicInfo> pAction = null)
+            {
+                void doAction()
+                {
+                    pAction(pInfo);
+                }
+
+                info = pInfo;
+                String button_uuid = Guid.NewGuid().ToString();
+                info.TryUpdateActorInfo();
+
+                if (pInfo.actor != null)
+                {
+                    button = PowerButtons.CreateButton("heraldic_avatar_button_" + button_uuid, info.savedSprite, info.actorName, "Living | " + info.city, pos, ButtonType.Click, parent.transform, doAction);
+                }
+                else
+                {
+                    button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, info.savedSprite, pInfo.actorName, "Dead", pos, ButtonType.Click, parent.transform, doAction);
+                    button.gameObject.transform.Find("Icon").gameObject.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 1f); // <-- This color is gray: 808080FF
+                }
+
+                if (importance == 1)
+                {
+                    button.gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_1");
+
+                }
+                /*
+                if(importance == 2)
+                {
+                    // this looks so fucking cool...
+                    button.gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_1");
+                    GameObject goldRing = new GameObject("gold_ring_FUCKYEAH_THIS_LOOKS_AWESOME");
+                    goldRing.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_2");
+                    goldRing.transform.parent = button.gameObject.transform;
+                }
+                */
+                button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector3(size, size, 0);
+            }
         }
 
         public class settings_window
         {
             // ====================================================
             // Settings Windows below
+            // This should be improved...
+            // its 22:54 12/06/23 i dont have time left
             // ====================================================
 
             private static WindowLibrary.EasyScrollWindow window;
+
+            private static PowerButton lgbt_button;
+            private static PowerButton asexual_button;
+
+            private static void lgbt_setting()
+            {
+                if (!PowerButtons.GetToggleValue(lgbt_button.name))
+                {
+                    HeraldicBoxSettings.instance.LGBT_Reproduction = false;
+                    HeraldicBoxSettings.SaveSettings();
+                }
+                else
+                {
+                    HeraldicBoxSettings.instance.LGBT_Reproduction = true;
+                    HeraldicBoxSettings.SaveSettings();
+                }
+            }
+
+            private static void asexual_setting()
+            {
+                if (!PowerButtons.GetToggleValue(asexual_button.name))
+                {
+                    HeraldicBoxSettings.instance.Asexual_Reproduction = false;
+                    HeraldicBoxSettings.SaveSettings();
+                }
+                else
+                {
+                    HeraldicBoxSettings.instance.Asexual_Reproduction = true;
+                    HeraldicBoxSettings.SaveSettings();
+                }
+            }
 
             public static void show()
             {
@@ -58,7 +138,18 @@ namespace HeraldicBox
                 {
                     window = new WindowLibrary.EasyScrollWindow("setting_window_heraldicbox", "Settings");
                     window.scrollWindow.show();
-                    PowerButtons.CreateButton("changesetting_lgbt_button", Resources.Load<Sprite>("ui/icons/options_icon"), "LGBT Reproduction", "", Vector2.zero, ButtonType.Toggle, window.content.transform);
+                    lgbt_button = PowerButtons.CreateButton("changesetting_lgbt_button", Resources.Load<Sprite>("ui/icons/options_icon"), "LGBT Reproduction", "", new Vector2(120, -110), ButtonType.Toggle, window.content.transform, lgbt_setting);
+                    asexual_button = PowerButtons.CreateButton("changesetting_asexual_reproduction_button", Resources.Load<Sprite>("ui/icons/options_icon"), "Asexual Reproduction", "", new Vector2(80, -110), ButtonType.Toggle, window.content.transform, asexual_setting);
+
+                    if (HeraldicBoxSettings.instance.LGBT_Reproduction)
+                    {
+                        PowerButtons.ToggleButton(lgbt_button.name);
+                    }
+
+                    if (HeraldicBoxSettings.instance.Asexual_Reproduction)
+                    {
+                        PowerButtons.ToggleButton(asexual_button.name);
+                    }
                 }
                 else
                 {
@@ -73,14 +164,46 @@ namespace HeraldicBox
             // Family Index
             // ====================================================
 
+            private Family referenced;
             private WindowLibrary.EasyScrollWindow window;
 
-            public edit_family_window()
+            private void ApplyText_familyName(string pInput)
             {
+                referenced.familyName = pInput;
+            }
+
+            private void ApplyText_lastName(string pInput)
+            {
+                referenced.lastName = pInput;
+            }
+
+            private void inspect_founder(HeraldicInfo info)
+            {
+                window.scrollWindow.clickHide();
+                new inspect_family_window(info);
+            }
+
+            public edit_family_window(Family pFamily)
+            {
+                referenced = pFamily;
                 window = new WindowLibrary.EasyScrollWindow("edit_family_window_heraldicbox", "Edit Family");
                 window.Clear();
 
+                new WindowLibrary.EasyInputField(window.content.transform, pFamily.familyName, new Vector3(130, -20), ApplyText_familyName);
+                new WindowLibrary.EasyInputField(window.content.transform, pFamily.lastName, new Vector3(130, -40), ApplyText_lastName);
 
+                new HeraldicAvatarButton(pFamily.members[0], window.content, new Vector2(95, -70), 0, 32, inspect_founder);
+
+                GameObject NameInput = WindowLibrary.AddTextToObject(window.content, "Name:", 10, new Vector3(30, -20), window.scrollWindow.name);
+                GameObject lastNameInput = WindowLibrary.AddTextToObject(window.content, "Last Name:", 10, new Vector3(41, -40), window.scrollWindow.name);
+                GameObject FounderText = WindowLibrary.AddTextToObject(window.content, "Founder:", 10, new Vector3(35.20f, -60), window.scrollWindow.name);
+                NameInput.AddComponent<Shadow>();
+                lastNameInput.AddComponent<Shadow>();
+                FounderText.AddComponent<Shadow>();
+                // The colors right down are: #FFBC66FF
+                FounderText.GetComponent<Text>().color = new Color(1f, 0.7372549f, 0.4f, 1f);
+                NameInput.GetComponent<Text>().color = new Color(1f, 0.7372549f, 0.4f, 1f);
+                lastNameInput.GetComponent<Text>().color = new Color(1f, 0.7372549f, 0.4f, 1f);
 
                 window.scrollWindow.show();
             }
@@ -97,12 +220,19 @@ namespace HeraldicBox
 
             private PowerButton FamilyButton(Family pFamily, Vector2 position)
             {
+                void buttonClick()
+                {
+                    window.scrollWindow.clickHide();
+                    new edit_family_window(pFamily);
+                }
+
                 String button_uuid = Guid.NewGuid().ToString();
                 HeraldicInfo founder = pFamily.members[0];
-                PowerButton button = PowerButtons.CreateButton("familyindex_look_button_" + button_uuid, founder.savedSprite, pFamily.familyName, "", position, ButtonType.Click, window.content.transform);
+                // Should be changed
+                PowerButton button = PowerButtons.CreateButton("familyindex_look_button_" + button_uuid, founder.savedSprite, pFamily.familyName, "", position, ButtonType.Click, window.content.transform, buttonClick);
                 button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(32, 38);
                 button.gameObject.GetComponent<Image>().sprite = pFamily.shield;
-                button.gameObject.GetComponent<Image>().color = pFamily.familyColor;
+                //button.gameObject.GetComponent<Image>().color = pFamily.familyColor;
                 return button;
             }
 
@@ -169,66 +299,23 @@ namespace HeraldicBox
 
             private WindowLibrary.EasyScrollWindow window;
             private HeraldicInfo referenced;
-
-            private class avatarButton
+            private void inspect_family_window_button(HeraldicInfo info)
             {
-                public PowerButton button;
-                private inspect_family_window window;
-                private HeraldicInfo info;
-
-                void inspect_family_window_button()
+                // scrollWindow.hide() is better but ill use the postfixed one by now
+                if (referenced == info)
                 {
-                    // scrollWindow.hide() is better but ill use the postfixed one by now
-                    if (window.referenced == info)
+                    if (referenced.actor != null)
                     {
-                        if (window.referenced.actor != null)
-                        {
-                            window.window.scrollWindow.clickHide();
-                            Config.selectedUnit = info.actor;
-                            ScrollWindow.moveAllToLeftAndRemove(true);
-                            ScrollWindow.showWindow("inspect_unit");
-                        }
-                    }
-                    else
-                    {
-                        window.window.scrollWindow.clickHide();
-                        new inspect_family_window(info);
+                        window.scrollWindow.clickHide();
+                        Config.selectedUnit = info.actor;
+                        ScrollWindow.moveAllToLeftAndRemove(true);
+                        ScrollWindow.showWindow("inspect_unit");
                     }
                 }
-
-                public avatarButton(HeraldicInfo pInfo, GameObject parent, inspect_family_window pWindow, Vector2 pos, int importance = 0, float size = 32) {
-                    info = pInfo;
-                    window = pWindow;
-                    String button_uuid = Guid.NewGuid().ToString();
-                    info.TryUpdateActorInfo();
-
-                    if (pInfo.actor != null)
-                    {
-                        button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, info.savedSprite, info.actorName, "Living | " + info.city, pos, ButtonType.Click, parent.transform, inspect_family_window_button);
-                    }
-                    else
-                    {
-                        Mojai.Mod.Util.Print(info.actorName + " THE FUCK!!!???? 1");
-                        button = PowerButtons.CreateButton("inspect_family_window_button_" + button_uuid, info.savedSprite, pInfo.actorName, "Dead", pos, ButtonType.Click, parent.transform, inspect_family_window_button);
-                        button.gameObject.transform.Find("Icon").gameObject.GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f, 1f); // <-- This color is gray: 808080FF
-                    }
-
-                    if (importance == 1)
-                    {
-                        button.gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_1");
-                        
-                    }
-                    /*
-                    if(importance == 2)
-                    {
-                        // this looks so fucking cool...
-                        button.gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_1");
-                        GameObject goldRing = new GameObject("gold_ring_FUCKYEAH_THIS_LOOKS_AWESOME");
-                        goldRing.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/importance_2");
-                        goldRing.transform.parent = button.gameObject.transform;
-                    }
-                    */
-                    button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector3(size, size, 0);
+                else
+                {
+                    window.scrollWindow.clickHide();
+                    new inspect_family_window(info);
                 }
             }
 
@@ -238,21 +325,20 @@ namespace HeraldicBox
                 pInfo.TryUpdateActorInfo();
 
                 window = new WindowLibrary.EasyScrollWindow("inspect_family_window", pInfo.actorName);
+                window.scrollWindow.gameObject.transform.Find("Background/Name").GetComponent<Text>().text = pInfo.actorName;
                 window.Clear();
                 window.UpdateVerticalRect((float)220);
 
-                avatarButton portrait = new avatarButton(pInfo, window.content, this, new Vector2(40, -30), 1, 45);
+                HeraldicAvatarButton portrait = new HeraldicAvatarButton(pInfo, window.content, new Vector2(40, -30), 1, 45, inspect_family_window_button);
 
                 GameObject parents_inner = new WindowLibrary.EasyInner("parents_inner", window.content.transform, new Vector3(170, 40), new Vector3(105, -100, 0)).inner;
-
                 if (pInfo.father != null)
                 {
-                    GameObject father_button = new avatarButton(pInfo.father, parents_inner, this, new Vector2(-60, 0)).button.gameObject;
+                    GameObject father_button = new HeraldicAvatarButton(pInfo.father, parents_inner, new Vector2(-60, 0), 0, 32, inspect_family_window_button).button.gameObject;
                 }
-
                 if (pInfo.mother != null)
                 {
-                    GameObject mother_button = new avatarButton(pInfo.mother, parents_inner, this, new Vector2(-25, 0)).button.gameObject;
+                    GameObject mother_button = new HeraldicAvatarButton(pInfo.mother, parents_inner, new Vector2(-25, 0), 0, 32, inspect_family_window_button).button.gameObject;
                 }
 
                 GameObject children_inner = new WindowLibrary.EasyInner("children_inner", window.content.transform, new Vector3(170, 40), new Vector3(105, -160, 0)).inner;
@@ -260,7 +346,7 @@ namespace HeraldicBox
                 float lastY = -160;
                 foreach (HeraldicInfo child in pInfo.children)
                 {
-                    GameObject childButton = new avatarButton(child, children_inner, this, new Vector2(lastX, 0)).button.gameObject;
+                    GameObject childButton = new HeraldicAvatarButton(child, children_inner, new Vector2(lastX, 0), 0, 32, inspect_family_window_button).button.gameObject;
                     if (lastX < 45)
                     {
                         lastX += 35;

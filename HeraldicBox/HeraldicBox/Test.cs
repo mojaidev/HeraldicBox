@@ -15,7 +15,7 @@ namespace HeraldicBox
 
         public static void debug_2()
         {
-            new HeraldicBoxUI.edit_family_window();
+            new HeraldicBoxUI.edit_family_window(Family.families[0]);
             //Saves.SaveHerladic();
         }
 

@@ -1,4 +1,5 @@
 ﻿using Mojai.Libraries.Other;
+using UnityEngine;
 using ReflectionUtility;
 
 namespace HeraldicBox
@@ -11,14 +12,20 @@ namespace HeraldicBox
             // DROPS SECTION
             // ====================================================
 
-            mDropsLibrary.customPower inspectfamily_drop = new mDropsLibrary.customPower(
+            mDropsLibrary.customDropPower inspectfamily_drop = new mDropsLibrary.customDropPower(
                 "heraldic_inspectfamily_drop",
                 new PowerAction(heraldic_inspectfamily_drop_action)
             );
 
-            mDropsLibrary.customPower newfamily_drop = new mDropsLibrary.customPower(
+            mDropsLibrary.customDropPower newfamily_drop = new mDropsLibrary.customDropPower(
                 "heraldic_newfamily_drop",
                 new PowerAction(heraldic_newfamily_drop_action)
+            );
+
+            //  SUB-SECTION TOOLS:
+            mDropsLibrary.spawnDropPower tool_deleteall_families = new mDropsLibrary.spawnDropPower(
+                "tool_deleteall_families",
+                new DropsAction(heraldic_tool_deleteallfamilies)
             );
         }
 
@@ -39,6 +46,7 @@ namespace HeraldicBox
                 WorldTip.instance.showToolbarText(actor.getName() + " Lineage starts here");
                 component.Heraldic.TryUpdateActorInfo();
                 CornerAye.instance.startAye(); // <-- Huh?
+                break;
             }
             return true;
         }
@@ -53,9 +61,30 @@ namespace HeraldicBox
                 if (component != null)
                 {
                     new HeraldicBoxUI.inspect_family_window(component.Heraldic);
+                    break;
                 }
             }
             return true;
+        }
+
+        public static void heraldic_tool_deleteallfamilies(WorldTile pTile = null, string pDropID = null)
+        {
+            MapBox.instance.getObjectsInChunks(pTile, 1, MapObjectType.Actor);
+            for (int i = 0; i < MapBox.instance.temp_map_objects.Count; i++)
+            {
+                Actor actor = (Actor)MapBox.instance.temp_map_objects[i];
+                HeraldicComponent component = actor.gameObject.GetComponent<HeraldicComponent>();
+                if (component == null)
+                {
+                    actor.killHimself();
+                }
+            }
+        }
+
+        public static void aboutme_mojai()
+        {
+            // Ignore Error
+            //System.Diagnostics.Process.Start("https://github.com/mojaidev");
         }
 
         public static void show_index()
