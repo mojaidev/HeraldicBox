@@ -6,6 +6,9 @@ namespace HeraldicBox
 {
     class HeraldicBoxActions
     {
+        // ====================================================
+        // HERALDICBOXACTIONS: In charge of the functionality.
+        // ====================================================
         public static void Setup()
         {
             // ====================================================
@@ -36,17 +39,23 @@ namespace HeraldicBox
         public static bool heraldic_newfamily_drop_action(WorldTile pTile = null, GodPower pPower = null)
         {
             MapBox.instance.getObjectsInChunks(pTile, 1, MapObjectType.Actor);
-            for (int i = 0; i < MapBox.instance.temp_map_objects.Count; i++)
+            if(MapBox.instance.temp_map_objects.Count > 0)
             {
-                Actor actor = (Actor)MapBox.instance.temp_map_objects[i];
+                Actor actor = (Actor)MapBox.instance.temp_map_objects[0];
                 ActorData actor_data = Reflection.GetField(typeof(Actor), actor, "data") as ActorData;
-                HeraldicComponent component = actor.gameObject.AddComponent<HeraldicComponent>();
-                component.Heraldic = new HeraldicInfo(actor_data, actor);
-                new Family(component.Heraldic);
-                WorldTip.instance.showToolbarText(actor.getName() + " Lineage starts here");
-                component.Heraldic.TryUpdateActorInfo();
-                CornerAye.instance.startAye(); // <-- Huh?
-                break;
+                if (actor.GetComponent<HeraldicComponent>() == null)
+                {
+                    HeraldicComponent component = actor.gameObject.AddComponent<HeraldicComponent>();
+                    component.Heraldic = new HeraldicInfo(actor_data, actor);
+                    new Family(component.Heraldic);
+                    WorldTip.instance.showToolbarText(actor.getName() + " Lineage starts here");
+                    component.Heraldic.TryUpdateActorInfo();
+                    CornerAye.instance.startAye(); // <-- Huh?
+                }
+                else
+                {
+                    WorldTip.instance.showToolbarText(actor.getName() + " Already have a fmily");
+                }
             }
             return true;
         }
@@ -80,6 +89,8 @@ namespace HeraldicBox
                 }
             }
         }
+
+        // SUB-SECTION: UI ACTIONS
 
         public static void aboutme_mojai()
         {

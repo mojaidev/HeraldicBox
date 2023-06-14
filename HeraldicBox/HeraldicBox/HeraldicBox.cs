@@ -12,7 +12,7 @@ namespace HeraldicBox
         {
             Mojai.Mod.Util.Print("GAME TARGET VERSION: " + Config.versionCodeText);
             HeraldicBoxSettings.Setup();
-            //Test.Init();
+            Test.Init();
             Patches.Setup();
             HeraldicBoxActions.Setup();
             HeraldicBoxUI.SetupAll();

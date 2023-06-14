@@ -43,7 +43,7 @@ namespace HeraldicBox
 			ActorData actor_data2 = null;
 			if (_possibleParents.Count > 0)
 			{
-				if (heraldicComponent1)
+				if (heraldicComponent1 != null)
 				{
 					for (int i = 0; i < _possibleParents.Count; i++)
 					{

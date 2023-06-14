@@ -7,7 +7,8 @@ using System;
 namespace HeraldicBox
 {
     // ====================================================
-    // HERALDICBOXUI
+    // HERALDICBOXUI: In charge of drawing the ui.
+    //
     // DISCLAIMER: This code is very bad, please understand
     // im lazy.
     // ====================================================
@@ -34,7 +35,7 @@ namespace HeraldicBox
             PowerButton newfamily_button = PowerButtons.CreateButton("heraldic_newfamily_drop", Resources.Load<Sprite>("ui/icons/new_family_icon"), "New Family", "Create a new famliy by dropping this.", Vector2.zero, ButtonType.GodPower);
             PowerButton tool_deleteall_families_button = PowerButtons.CreateButton("tool_deleteall_families", Resources.Load<Sprite>("ui/icons/deleteall_icon"), "Delete Orphans", "Delete all units without a family.", Vector2.zero, ButtonType.GodPower);
             PowerButton inspectfamily_drop_button = PowerButtons.CreateButton("heraldic_inspectfamily_drop", Resources.Load<Sprite>("ui/icons/inspect_icon"), "Inspect Family", "Get a unit's family tree by dropping this.", Vector2.zero, ButtonType.GodPower);
-            PowerButton family_index_button = PowerButtons.CreateButton("family_index_button", Resources.Load<Sprite>("ui/icons/index_icon"), "Family Index", "Track down families [BETA].", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_index);
+            PowerButton family_index_button = PowerButtons.CreateButton("family_index_button", Resources.Load<Sprite>("ui/icons/index_icon"), "Family Index", "Track down families.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_index);
             PowerButton aboutme_button = PowerButtons.CreateButton("aboutme_button_mojai", Resources.Load<Sprite>("ui/icons/mojai_author_icon"), "About Me", "Ñ", Vector2.zero);
             PowerButton settings_button = PowerButtons.CreateButton("heraldic_settings", Resources.Load<Sprite>("ui/icons/options_icon"), "Settings", "Modify HeraldicBox behaviour by changing the settings.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_settings);
 
@@ -247,10 +248,11 @@ namespace HeraldicBox
                 float scrollSize = 207;
                 foreach (Family pFamily in Family.families)
                 {
-                    if(lastX <= 160)
+                    FamilyButton(pFamily, new Vector2(lastX, lastY));
+                    lastX += 40;
+                    if (lastX <= 160)
                     {
-                        FamilyButton(pFamily, new Vector2(lastX, lastY));
-                        lastX += 40;
+                        
                     }
                     else
                     {
@@ -263,6 +265,8 @@ namespace HeraldicBox
                             scrollSize += 50;
                             window.UpdateVerticalRect(scrollSize);
                         }
+
+                        
                     }
                 }
 
@@ -299,9 +303,11 @@ namespace HeraldicBox
 
             private WindowLibrary.EasyScrollWindow window;
             private HeraldicInfo referenced;
+
+            // inspect_family_window_button() is an exception that is not in HeraldicBoxActions
             private void inspect_family_window_button(HeraldicInfo info)
             {
-                // scrollWindow.hide() is better but ill use the postfixed one by now
+                // scrollWindow.hide() is better
                 if (referenced == info)
                 {
                     if (referenced.actor != null)
@@ -325,7 +331,7 @@ namespace HeraldicBox
                 pInfo.TryUpdateActorInfo();
 
                 window = new WindowLibrary.EasyScrollWindow("inspect_family_window", pInfo.actorName);
-                window.scrollWindow.gameObject.transform.Find("Background/Name").GetComponent<Text>().text = pInfo.actorName;
+                window.scrollWindow.gameObject.transform.Find("Background/Title").GetComponent<Text>().text = pInfo.actorName;
                 window.Clear();
                 window.UpdateVerticalRect((float)220);
 

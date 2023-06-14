@@ -59,7 +59,7 @@ namespace Mojai.Libraries.UI
                 for (int i = 0; i < content.transform.childCount; i++)
                 {
                     GameObject obj = content.transform.GetChild(i).gameObject;
-                    obj.SetActive(false);
+                    UnityEngine.Object.Destroy(obj);
                 }
             }
 
