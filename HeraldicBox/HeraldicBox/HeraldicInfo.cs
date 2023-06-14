@@ -32,7 +32,7 @@ namespace HeraldicBox
                 loader.load(actor);
                 Image avatar = loader.transform.GetChild(0).gameObject.GetComponent<Image>();
                 savedSprite = avatar.sprite;
-                loader_object.SetActive(false);
+                UnityEngine.Object.Destroy(loader_object);
 
                 actorName = actor.getName();
 
