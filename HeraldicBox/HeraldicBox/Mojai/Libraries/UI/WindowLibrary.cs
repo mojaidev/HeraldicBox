@@ -22,6 +22,7 @@ namespace Mojai.Libraries.UI
                 Element = UnityEngine.Object.Instantiate(GameObjects.FindEvenInactive("NameInputElement"), parent.transform);
                 Input = Element.GetComponent<NameInput>();
                 Element.transform.localPosition = position;
+                Element.SetActive(true);
 
                 Input.setText(value);
                 Input.addListener(pAction);
