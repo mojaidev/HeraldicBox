@@ -94,8 +94,7 @@ namespace HeraldicBox
 
         public static void aboutme_mojai()
         {
-            // Ignore Error
-            //System.Diagnostics.Process.Start("https://github.com/mojaidev");
+            Application.OpenURL("https://github.com/mojaidev");
         }
 
         public static void show_index()

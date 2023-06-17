@@ -49,7 +49,7 @@ namespace HeraldicBox
 					{
 						Actor pActor = _possibleParents[i];
 						actor_data2 = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
-						if (HeraldicBoxSettings.instance.LGBT_Reproduction == false && actor_data2.gender == actor_data.gender)
+						if ((bool)HeraldicBoxSettings.GetSetting("LGBT_Reproduction") == false && actor_data2.gender == actor_data.gender)
                         {
                         }
                         else
@@ -73,7 +73,7 @@ namespace HeraldicBox
 			HeraldicInfo newInfo = null;
 			if (heraldicComponent1 != null)
 			{
-				if (heraldicComponent2 == null && HeraldicBoxSettings.instance.Asexual_Reproduction == false)
+				if (heraldicComponent2 == null && (bool)HeraldicBoxSettings.GetSetting("Asexual_Reproduction") == false)
 				{
 					__result = false;
 					return false;

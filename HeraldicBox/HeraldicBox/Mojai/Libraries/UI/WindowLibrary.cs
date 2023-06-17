@@ -8,6 +8,31 @@ namespace Mojai.Libraries.UI
 {
     class WindowLibrary
     {
+        public class EasyRedButton
+        {
+            public GameObject Element;
+            public Button button;
+
+            public EasyRedButton(Transform parent, string text, Vector3 position, Vector2 size, UnityEngine.Events.UnityAction pAction = null)
+            {
+                // This is to get the NameInputElement from 'inspect_unit' cus when game starts it doesnt exist.
+                GameObject redButton = new GameObject("button_" + text);
+                redButton.transform.SetParent(parent.transform);
+                Image buttonImage = redButton.AddComponent<Image>();
+                buttonImage.sprite = Resources.Load<Sprite>("ui/icons/redbutton");
+                RectTransform buttonRect = redButton.GetComponent<RectTransform>();
+                buttonRect.localPosition = position;
+                redButton.transform.localScale = new Vector3(1f, 1f, 1f);
+                buttonRect.sizeDelta = size;
+
+                button = redButton.AddComponent<Button>();
+
+                GameObject textD = AddTextToObject(redButton, text, 10, Vector3.zero);
+                textD.GetComponent<Text>().color = new Color(1, 1, 1, 1);
+                button.onClick.AddListener(pAction);
+            }
+        }
+
         public class EasyInputField
         {
             public GameObject Element;
@@ -88,8 +113,10 @@ namespace Mojai.Libraries.UI
 
         public static GameObject AddTextToObject(GameObject parent, string text, int fontSize, Vector3 textPosition, string template = "inspect_unit")
         {
-            GameObject textTemplate = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{template}/Background/Name");
-            GameObject textObject = UnityEngine.Object.Instantiate(textTemplate, parent.transform);
+            Reflection.CallStaticMethod(typeof(ScrollWindow), "checkWindowExist", "inspect_unit");
+            ScrollWindow.get("inspect_unit").gameObject.SetActive(false);
+
+            GameObject textObject = UnityEngine.Object.Instantiate(GameObjects.FindEvenInactive("Name"), parent.transform);
             textObject.SetActive(true);
 
             Text textComponent = textObject.GetComponent<Text>();

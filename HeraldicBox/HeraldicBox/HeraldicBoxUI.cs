@@ -3,6 +3,7 @@ using UnityEngine;
 using NCMS.Utils;
 using UnityEngine.UI;
 using System;
+using System.Collections.Generic;
 
 namespace HeraldicBox
 {
@@ -30,7 +31,7 @@ namespace HeraldicBox
             //
             // ====================================================
 
-            TabLibrary.Tab tab = new TabLibrary.Tab("tab_heraldicbox", "HeraldicBox", Resources.Load<Sprite>("ui/icons/tab_heraldic"), new Vector2(1f, 1f), new Vector2(HeraldicBoxSettings.instance.tab_HeraldicBox_Position, 49.62f));
+            TabLibrary.Tab tab = new TabLibrary.Tab("tab_heraldicbox", "HeraldicBox", Resources.Load<Sprite>("ui/icons/tab_heraldic"), new Vector2(1f, 1f), new Vector2(Convert.ToSingle(HeraldicBoxSettings.GetSetting("tab_HeraldicBox_Position")), 49.62f));
 
             PowerButton newfamily_button = PowerButtons.CreateButton("heraldic_newfamily_drop", Resources.Load<Sprite>("ui/icons/new_family_icon"), "New Family", "Create a new famliy by dropping this.", Vector2.zero, ButtonType.GodPower);
             PowerButton tool_deleteall_families_button = PowerButtons.CreateButton("tool_deleteall_families", Resources.Load<Sprite>("ui/icons/deleteall_icon"), "Delete Orphans", "Delete all units without a family.", Vector2.zero, ButtonType.GodPower);
@@ -96,8 +97,6 @@ namespace HeraldicBox
         {
             // ====================================================
             // Settings Windows below
-            // This should be improved...
-            // its 22:54 12/06/23 i dont have time left
             // ====================================================
 
             private static WindowLibrary.EasyScrollWindow window;
@@ -105,51 +104,36 @@ namespace HeraldicBox
             private static PowerButton lgbt_button;
             private static PowerButton asexual_button;
 
-            private static void lgbt_setting()
-            {
-                if (!PowerButtons.GetToggleValue(lgbt_button.name))
-                {
-                    HeraldicBoxSettings.instance.LGBT_Reproduction = false;
-                    HeraldicBoxSettings.SaveSettings();
-                }
-                else
-                {
-                    HeraldicBoxSettings.instance.LGBT_Reproduction = true;
-                    HeraldicBoxSettings.SaveSettings();
-                }
-            }
-
-            private static void asexual_setting()
-            {
-                if (!PowerButtons.GetToggleValue(asexual_button.name))
-                {
-                    HeraldicBoxSettings.instance.Asexual_Reproduction = false;
-                    HeraldicBoxSettings.SaveSettings();
-                }
-                else
-                {
-                    HeraldicBoxSettings.instance.Asexual_Reproduction = true;
-                    HeraldicBoxSettings.SaveSettings();
-                }
-            }
-
             public static void show()
             {
                 if (window == null)
                 {
                     window = new WindowLibrary.EasyScrollWindow("setting_window_heraldicbox", "Settings");
                     window.scrollWindow.show();
-                    lgbt_button = PowerButtons.CreateButton("changesetting_lgbt_button", Resources.Load<Sprite>("ui/icons/options_icon"), "LGBT Reproduction", "", new Vector2(120, -110), ButtonType.Toggle, window.content.transform, lgbt_setting);
-                    asexual_button = PowerButtons.CreateButton("changesetting_asexual_reproduction_button", Resources.Load<Sprite>("ui/icons/options_icon"), "Asexual Reproduction", "", new Vector2(80, -110), ButtonType.Toggle, window.content.transform, asexual_setting);
 
-                    if (HeraldicBoxSettings.instance.LGBT_Reproduction)
+                    float lastX = 40;
+                    float lastY = -40;
+                    foreach (var setting in HeraldicBoxSettings.instance.settings)
                     {
-                        PowerButtons.ToggleButton(lgbt_button.name);
-                    }
-
-                    if (HeraldicBoxSettings.instance.Asexual_Reproduction)
-                    {
-                        PowerButtons.ToggleButton(asexual_button.name);
+                        if(setting.Value.obj is bool)
+                        {
+                            if(lastX < 170)
+                            {
+                                HeraldicBoxSettings.Setting daSetting = setting.Value;
+                                String button_uuid = Guid.NewGuid().ToString();
+                                PowerButton button = PowerButtons.CreateButton("setting_" + setting.Key, Resources.Load<Sprite>("ui/icons/options_icon"), daSetting.configName, "", new Vector2(lastX, lastY), ButtonType.Toggle, window.content.transform, daSetting.switchBoolConfig);
+                                if ((bool)daSetting.obj == true)
+                                {
+                                    PowerButtons.ToggleButton(button.name);
+                                }
+                                lastX += 40;
+                            }
+                            else
+                            {
+                                lastX = 40;
+                                lastY += -40;
+                            }
+                        }
                     }
                 }
                 else
@@ -167,6 +151,14 @@ namespace HeraldicBox
 
             private Family referenced;
             private WindowLibrary.EasyScrollWindow window;
+
+            private void Delete_Family()
+            {
+                referenced.Destroy();
+                window.scrollWindow.clickHide();
+                ScrollWindow.moveAllToLeftAndRemove(true);
+                new family_index_window();
+            }
 
             private void ApplyText_familyName(string pInput)
             {
@@ -194,6 +186,8 @@ namespace HeraldicBox
                 new WindowLibrary.EasyInputField(window.content.transform, pFamily.lastName, new Vector3(130, -40), ApplyText_lastName);
 
                 new HeraldicAvatarButton(pFamily.members[0], window.content, new Vector2(95, -70), 0, 32, inspect_founder);
+
+                new WindowLibrary.EasyRedButton(window.content.transform, "DELETE", new Vector3(50, -200), new Vector2(80, 20), Delete_Family);
 
                 GameObject NameInput = WindowLibrary.AddTextToObject(window.content, "Name:", 10, new Vector3(30, -20), window.scrollWindow.name);
                 GameObject lastNameInput = WindowLibrary.AddTextToObject(window.content, "Last Name:", 10, new Vector3(41, -40), window.scrollWindow.name);
@@ -223,7 +217,7 @@ namespace HeraldicBox
             {
                 void buttonClick()
                 {
-                    window.scrollWindow.clickHide();
+                    window.scrollWindow.hide();
                     new edit_family_window(pFamily);
                 }
 
@@ -280,29 +274,24 @@ namespace HeraldicBox
             // ====================================================
             // Inspect Family window is over here!!
             //
-            //  __________________________________________________
-            // |                 This dude family                 |
-            // |                    _______                       |
-            // |                   |       |                      |
-            // |                   |   |   |                      |
-            // |                   |   |   |                      |
-            // |                   |  o|o  |                      |
-            // |                   |_______|                      |
-            // |                                                  |
-            // |                                                  |
-            // |       Parents:                                   |
-            // |                                                  |
-            // |                                                  |
-            // |       Childs:                                    |
-            // |__________________________________________________|
-            //
             // WARNING: BAD CODE BELOW!!
             // ====================================================
 
             // Ill make a method to create Inners someday but that is in the future.
 
+            private static List<inspect_family_window> openedWindows = new List<inspect_family_window>();
             private WindowLibrary.EasyScrollWindow window;
             private HeraldicInfo referenced;
+
+            public static void clickHide_Postfix(ScrollWindow __instance)
+            {
+                foreach(inspect_family_window pWindow in openedWindows)
+                {
+                    UnityEngine.Object.Destroy(pWindow.window.scrollWindow.gameObject);
+                }
+
+                openedWindows = new List<inspect_family_window>();
+            }
 
             // inspect_family_window_button() is an exception that is not in HeraldicBoxActions
             private void inspect_family_window_button(HeraldicInfo info)
@@ -320,19 +309,20 @@ namespace HeraldicBox
                 }
                 else
                 {
-                    window.scrollWindow.clickHide();
+                    window.scrollWindow.hide();
                     new inspect_family_window(info);
                 }
             }
 
             public inspect_family_window(HeraldicInfo pInfo)
             {
+                openedWindows.Add(this);
                 referenced = pInfo;
                 pInfo.TryUpdateActorInfo();
+                String window_uuid = Guid.NewGuid().ToString();
 
-                window = new WindowLibrary.EasyScrollWindow("inspect_family_window", pInfo.actorName);
+                window = new WindowLibrary.EasyScrollWindow("inspect_family_window_" + window_uuid, pInfo.actorName);
                 window.scrollWindow.gameObject.transform.Find("Background/Title").GetComponent<Text>().text = pInfo.actorName;
-                window.Clear();
                 window.UpdateVerticalRect((float)220);
 
                 HeraldicAvatarButton portrait = new HeraldicAvatarButton(pInfo, window.content, new Vector2(40, -30), 1, 45, inspect_family_window_button);

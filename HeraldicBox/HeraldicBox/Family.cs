@@ -60,6 +60,19 @@ namespace HeraldicBox
 
         [NonSerialized] public List<HeraldicInfo> members = new List<HeraldicInfo>();
 
+        public void Destroy()
+        {
+            foreach(HeraldicInfo member in members)
+            {
+                if(member.actor != null)
+                {
+                    UnityEngine.Object.Destroy(member.actor.gameObject.GetComponent<HeraldicComponent>());
+                }
+            }
+
+            families.Remove(this);
+        }
+
         public Family(HeraldicInfo pFounder)
         {
             if(pFounder != null)
