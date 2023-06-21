@@ -4,6 +4,7 @@ using NCMS.Utils;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using ReflectionUtility;
 
 namespace HeraldicBox
 {
@@ -18,6 +19,7 @@ namespace HeraldicBox
         public static void SetupAll()
         {
             tab_setup();
+            inspect_unit_changes();
         }
 
         private static void tab_setup()
@@ -35,7 +37,7 @@ namespace HeraldicBox
 
             PowerButton newfamily_button = PowerButtons.CreateButton("heraldic_newfamily_drop", Resources.Load<Sprite>("ui/icons/new_family_icon"), "New Family", "Create a new famliy by dropping this.", Vector2.zero, ButtonType.GodPower);
             PowerButton tool_deleteall_families_button = PowerButtons.CreateButton("tool_deleteall_families", Resources.Load<Sprite>("ui/icons/deleteall_icon"), "Delete Orphans", "Delete all units without a family.", Vector2.zero, ButtonType.GodPower);
-            PowerButton inspectfamily_drop_button = PowerButtons.CreateButton("heraldic_inspectfamily_drop", Resources.Load<Sprite>("ui/icons/inspect_icon"), "Inspect Family", "Get a unit's family tree by dropping this.", Vector2.zero, ButtonType.GodPower);
+            PowerButton inspectfamily_drop_button = PowerButtons.CreateButton("heraldic_inspectfamily_drop", Resources.Load<Sprite>("ui/icons/inspect_icon"), "Inspect Family", "Get a unit's family window by dropping this.", Vector2.zero, ButtonType.GodPower);
             PowerButton family_index_button = PowerButtons.CreateButton("family_index_button", Resources.Load<Sprite>("ui/icons/index_icon"), "Family Index", "Track down families.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_index);
             PowerButton aboutme_button = PowerButtons.CreateButton("aboutme_button_mojai", Resources.Load<Sprite>("ui/icons/mojai_author_icon"), "About Me", "Ñ", Vector2.zero);
             PowerButton settings_button = PowerButtons.CreateButton("heraldic_settings", Resources.Load<Sprite>("ui/icons/options_icon"), "Settings", "Modify HeraldicBox behaviour by changing the settings.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_settings);
@@ -46,6 +48,21 @@ namespace HeraldicBox
             TabLibrary.Tab.AddButtonToTab(family_index_button,                      "tab_heraldicbox", new Vector2(340.2f, 18));
             TabLibrary.Tab.AddButtonToTab(settings_button,                          "tab_heraldicbox", new Vector2(383.2f, 18));
             TabLibrary.Tab.AddButtonToTab(aboutme_button,                           "tab_heraldicbox", new Vector2(803.2f, 18));
+        }
+
+        private static void inspect_unit_changes()
+        {
+            // ====================================================
+            // INSPECT UNIT UI CHANGES
+            // ====================================================
+
+            Reflection.CallStaticMethod(typeof(ScrollWindow), "checkWindowExist", "inspect_unit");
+            ScrollWindow inspect_unit_window = ScrollWindow.get("inspect_unit");
+            inspect_unit_window.gameObject.SetActive(false);
+
+            GameObject background = inspect_unit_window.transform.Find("Background").gameObject;
+            PowerButton button = PowerButtons.CreateButton("inspect_unit_inspect_family_lol", Resources.Load<Sprite>("ui/icons/inspect_icon"), "Family", "", new Vector2(116.8f, -35.5f), ButtonType.Click, background.transform, HeraldicBoxActions.inspect_family_button_inside);
+            button.gameObject.GetComponent<Image>().sprite = Resources.Load<Sprite>("ui/icons/backgroundTabButton");
         }
 
         private class HeraldicAvatarButton
@@ -111,30 +128,49 @@ namespace HeraldicBox
                     window = new WindowLibrary.EasyScrollWindow("setting_window_heraldicbox", "Settings");
                     window.scrollWindow.show();
 
+                    // BOOLEAN SETTINGS:
                     float lastX = 40;
                     float lastY = -40;
                     foreach (var setting in HeraldicBoxSettings.instance.settings)
                     {
                         if(setting.Value.obj is bool)
                         {
-                            if(lastX < 170)
+                            HeraldicBoxSettings.Setting daSetting = setting.Value;
+                            String button_uuid = Guid.NewGuid().ToString();
+                            PowerButton button = PowerButtons.CreateButton("setting_" + setting.Key, Resources.Load<Sprite>("ui/icons/options_icon"), daSetting.configName, "", new Vector2(lastX, lastY), ButtonType.Toggle, window.content.transform, daSetting.switchBoolConfig);
+                            if ((bool)daSetting.obj == true)
                             {
-                                HeraldicBoxSettings.Setting daSetting = setting.Value;
-                                String button_uuid = Guid.NewGuid().ToString();
-                                PowerButton button = PowerButtons.CreateButton("setting_" + setting.Key, Resources.Load<Sprite>("ui/icons/options_icon"), daSetting.configName, "", new Vector2(lastX, lastY), ButtonType.Toggle, window.content.transform, daSetting.switchBoolConfig);
-                                if ((bool)daSetting.obj == true)
-                                {
-                                    PowerButtons.ToggleButton(button.name);
-                                }
-                                lastX += 40;
+                                PowerButtons.ToggleButton(button.name);
                             }
-                            else
+                            lastX += 40;
+                            if (lastX >= 170)
                             {
                                 lastX = 40;
                                 lastY += -40;
                             }
                         }
                     }
+
+                    lastY += -60;
+                    WindowLibrary.EasyInner string_settings_inner = new WindowLibrary.EasyInner("heraldicbox_settings_inner1", window.content.transform, new Vector3(180, 70), new Vector3(100, lastY));
+
+                    // STRING (INPUT) SETTINGS:
+                    lastY = 0;
+                    foreach (var setting in HeraldicBoxSettings.instance.settings)
+                    {
+                        if (setting.Value.obj is string)
+                        {
+                            WindowLibrary.AddTextToObject(string_settings_inner.inner, setting.Value.configName, 6, new Vector3(0, lastY + 15)).AddComponent<Shadow>();
+                            void ActionInput(string input)
+                            {
+                                HeraldicBoxSettings.ExecuteCustomInputSetting(setting.Key, input);
+                            }
+                            WindowLibrary.EasyInputField inputField = new WindowLibrary.EasyInputField(string_settings_inner.inner.transform, (string)setting.Value.obj, Vector3.zero, ActionInput);
+                            lastY += -20; // (-20) isnt the real value, its a placeholder.
+                        }
+                    }
+
+
                 }
                 else
                 {
@@ -244,11 +280,7 @@ namespace HeraldicBox
                 {
                     FamilyButton(pFamily, new Vector2(lastX, lastY));
                     lastX += 40;
-                    if (lastX <= 160)
-                    {
-                        
-                    }
-                    else
+                    if (lastX >= 160)
                     {
                         lastX = 40;
                         lastY += -40;
@@ -259,8 +291,6 @@ namespace HeraldicBox
                             scrollSize += 50;
                             window.UpdateVerticalRect(scrollSize);
                         }
-
-                        
                     }
                 }
 

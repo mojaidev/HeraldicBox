@@ -9,16 +9,21 @@ using Newtonsoft.Json;
 
 namespace HeraldicBox
 {
+    // ====================================================
+    // SETTINGS: In charge of the custom behaviour.
+    //
+    // WARNING: this code needs to be upgraded the current
+    // one is pretty fucked up.
+    // ====================================================
     class HeraldicBoxSettings
     {
         [NonSerialized] public static HeraldicBoxSettings instance;
-
+        public delegate void CustomInput(object input, Setting instance);
 
         public class Setting
         {
             public string configName;
             public object obj;
-
             public Setting(object setting, string publicName = "")
             {
                 configName = publicName;
@@ -55,9 +60,17 @@ namespace HeraldicBox
         public Dictionary<string, Setting> settings = new Dictionary<string, Setting>() {
             { "Asexual_Reproduction", new Setting(true, "Asexual Reproduction")},
             { "LGBT_Reproduction", new Setting(true, "LGBT Reproduction") },
-            { "tab_HeraldicBox_Position", new Setting((float)-400) }
+            { "inheritance", new Setting(false, "Trait Inheritance") },
+
+            { "tab_HeraldicBox_Position", new Setting((float)-400) },
+            { "Traits_Probability", new Setting(0f.ToString(), "INHERITANCE PROBABILITY (0 to 100)") }
         };
 
+        [NonSerialized]
+        private static Dictionary<string, CustomInput> behaviour = new Dictionary<string, CustomInput>()
+        {
+            { "Traits_Probability", HeraldicBoxActions.trait_inheritance_input }
+        };
 
 
 
@@ -78,6 +91,23 @@ namespace HeraldicBox
             {
                 return instance.settings[name].obj;
             }
+        }
+
+        public static void ExecuteCustomInputSetting(string name, object input)
+        {
+            Setting setting = instance.settings[name];
+            CustomInput executeThis = behaviour[name];
+            if(setting == null)
+            {
+                return;
+            }
+            if(executeThis == null)
+            {
+                return;
+            }
+
+            executeThis(input, setting);
+            SaveSettings();
         }
 
         public static void Setup()

@@ -41,6 +41,8 @@ namespace HeraldicBox
 			}
 			Actor actor2 = null;
 			ActorData actor_data2 = null;
+
+			// This nesting is horrible...
 			if (_possibleParents.Count > 0)
 			{
 				if (heraldicComponent1 != null)
@@ -48,8 +50,8 @@ namespace HeraldicBox
 					for (int i = 0; i < _possibleParents.Count; i++)
 					{
 						Actor pActor = _possibleParents[i];
-						actor_data2 = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
-						if ((bool)HeraldicBoxSettings.GetSetting("LGBT_Reproduction") == false && actor_data2.gender == actor_data.gender)
+						ActorData pData = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
+						if ((bool)HeraldicBoxSettings.GetSetting("LGBT_Reproduction") == false && pData.gender == actor_data.gender)
                         {
                         }
                         else
@@ -59,8 +61,10 @@ namespace HeraldicBox
 								if (pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic.family != heraldicComponent1.Heraldic.family)
 								{
 									actor2 = pActor;
+									actor_data2 = pData;
 									heraldicComponent2 = actor2.gameObject.GetComponent<HeraldicComponent>();
 									_possibleParents.Remove(pActor);
+									break;
 								}
 							}
 						}
@@ -150,9 +154,31 @@ namespace HeraldicBox
 					HeraldicComponent newComponent = pActor.gameObject.AddComponent<HeraldicComponent>();
 					newComponent.Heraldic = heraldicInfo;
 					heraldicInfo.actor = pActor;
-					heraldicInfo.TryUpdateActorInfo();
 				}
 			}
+		}
+
+		public static bool inheritTraits_Prefix(List<string> pTraits, ActorData __instance)
+        {
+			if( (bool)HeraldicBoxSettings.GetSetting("inheritance") == false)
+            {
+				return true;
+            }
+
+			for (int i = 0; i < pTraits.Count; i++)
+			{
+				string pID = pTraits[i];
+				ActorTrait actorTrait = AssetManager.traits.get(pID);
+				if (actorTrait != null && actorTrait.inherit != 0f)
+				{
+					float num = Toolbox.randomFloat( float.Parse((string)HeraldicBoxSettings.GetSetting("Traits_Probability")) , 100f);
+					if (num == 100f && !__instance.traits.Contains(actorTrait.id) && !(bool)__instance.CallMethod("haveOppositeTrait", actorTrait))
+					{
+						__instance.addTrait(actorTrait.id);
+					}
+				}
+			}
+			return false;
 		}
 
 		// ====================================================

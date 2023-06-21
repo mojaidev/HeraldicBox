@@ -1,6 +1,7 @@
 ﻿using Mojai.Libraries.Other;
 using UnityEngine;
 using ReflectionUtility;
+using System.Text.RegularExpressions;
 
 namespace HeraldicBox
 {
@@ -91,6 +92,40 @@ namespace HeraldicBox
         }
 
         // SUB-SECTION: UI ACTIONS
+
+        public static void trait_inheritance_input(object input, HeraldicBoxSettings.Setting setting)
+        {
+            if (Regex.IsMatch((string)input, @"^\d+$") == false)
+            {
+                return;
+            }
+
+            float floatInput = float.Parse((string)input);
+            if(floatInput > 100f)
+            {
+                setting.obj = 100f.ToString();
+                return;
+            }
+
+            if(floatInput < 0)
+            {
+                setting.obj = 0f.ToString();
+                return;
+            }
+
+            setting.obj = floatInput.ToString();
+        }
+
+        public static void inspect_family_button_inside()
+        {
+            Actor actor = Config.selectedUnit;
+            HeraldicComponent component = actor.gameObject.GetComponent<HeraldicComponent>();
+            if (component != null)
+            {
+                ScrollWindow.moveAllToLeftAndRemove(true);
+                new HeraldicBoxUI.inspect_family_window(component.Heraldic);
+            }
+        }
 
         public static void aboutme_mojai()
         {
