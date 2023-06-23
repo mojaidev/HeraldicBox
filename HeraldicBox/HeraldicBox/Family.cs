@@ -26,12 +26,12 @@ namespace HeraldicBox
                         data.generateName(__instance.asset, instanceRace);
                         data.name = data.name + " " + info.family.lastName;
 
-                        if(info.mother != null)
+                        if (info.mother != null)
                         {
                             if (info.mother.family != null)
                             {
                                 // Ill fix incest later...
-                                if(info.mother.family.lastName != info.family.lastName)
+                                if (info.mother.family.lastName != info.family.lastName)
                                 {
                                     data.name = data.name + " " + info.mother.family.lastName;
                                 }
@@ -44,6 +44,13 @@ namespace HeraldicBox
                 }
             }
             return true;
+        }
+
+        public static void clearTiles_Postfix()
+        {
+            // This is also a patch for generateNewMap
+
+            families = new List<Family>();
         }
 
         // ====================================================

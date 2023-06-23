@@ -49,6 +49,7 @@ namespace HeraldicBox
         }
 
 
+        public readonly string settings_version = "0.0.3";
         // ====================================================
         // DEFAULT SETTINGS
         // ====================================================
@@ -62,7 +63,7 @@ namespace HeraldicBox
             { "LGBT_Reproduction", new Setting(true, "LGBT Reproduction") },
             { "inheritance", new Setting(false, "Trait Inheritance") },
 
-            { "tab_HeraldicBox_Position", new Setting((float)-400) },
+            { "tab_HeraldicBox_Position", new Setting((float)-250) },
             { "Traits_Probability", new Setting(0f.ToString(), "INHERITANCE PROBABILITY (0 to 100)") }
         };
 
@@ -112,9 +113,9 @@ namespace HeraldicBox
 
         public static void Setup()
         {
-            if (File.Exists($"{NCMS.Core.NCMSModsPath}/HeraldicBoxSettings.json"))
+            if (File.Exists($"{NCMS.Core.NCMSModsPath}/HeraldicSettings.json"))
             {
-                string settingsjson = File.ReadAllText($"{NCMS.Core.NCMSModsPath}/HeraldicBoxSettings.json");
+                string settingsjson = File.ReadAllText($"{NCMS.Core.NCMSModsPath}/HeraldicSettings.json");
                 HeraldicBoxSettings savedInstance = JsonConvert.DeserializeObject<HeraldicBoxSettings>(settingsjson);
                 Mojai.Mod.Util.Print(settingsjson);
                 instance = savedInstance;
@@ -124,7 +125,7 @@ namespace HeraldicBox
                 HeraldicBoxSettings defaultSettings = new HeraldicBoxSettings();
 
                 string defaultSettingsJson = JsonConvert.SerializeObject(defaultSettings);
-                File.WriteAllText($"{NCMS.Core.NCMSModsPath}/HeraldicBoxSettings.json", defaultSettingsJson);
+                File.WriteAllText($"{NCMS.Core.NCMSModsPath}/HeraldicSettings.json", defaultSettingsJson);
 
                 instance = defaultSettings;
             }
@@ -133,7 +134,7 @@ namespace HeraldicBox
         public static void SaveSettings()
         {
             string saveSettingsJson = JsonConvert.SerializeObject(instance);
-            File.WriteAllText($"{NCMS.Core.NCMSModsPath}/HeraldicBoxSettings.json", saveSettingsJson);
+            File.WriteAllText($"{NCMS.Core.NCMSModsPath}/HeraldicSettings.json", saveSettingsJson);
         }
     }
 }

@@ -19,7 +19,27 @@ namespace HeraldicBox
 		// IMPORTANT PATCHES SECTION
 		// ====================================================
 
-		public static bool produceNewCitizen_Prefix(Building pBuilding, City pCity, ai.behaviours.CityBehProduceUnit __instance, ref bool __result)
+		// tryToProduceUnit_Prefix has been made to prevent conflicts with CollectionMod
+		public static bool tryToProduceUnit_Prefix(City pCity, ai.behaviours.CityBehProduceUnit __instance)
+		{
+			if (getFoodItem(null, pCity) == null)
+			{
+				return false;
+			}
+			Building buildingType = pCity.CallMethod("getBuildingType", SB.type_house, true, false) as Building;
+			if (buildingType == null)
+			{
+				return false;
+			}
+			if (produceNewCitizen_Prefix(buildingType, pCity, __instance))
+			{
+				Reflection.SetField(__instance, "unitProduced", true);
+			}
+
+			return false;
+		}
+
+		public static bool produceNewCitizen_Prefix(Building pBuilding, City pCity, ai.behaviours.CityBehProduceUnit __instance = null)
 		{
 			List<Actor> _possibleParents = Reflection.GetField(__instance.GetType(), __instance, "_possibleParents") as List<Actor>;
 
@@ -79,7 +99,6 @@ namespace HeraldicBox
 			{
 				if (heraldicComponent2 == null && (bool)HeraldicBoxSettings.GetSetting("Asexual_Reproduction") == false)
 				{
-					__result = false;
 					return false;
 				}
 
@@ -139,8 +158,7 @@ namespace HeraldicBox
 			{
 				pCity.addPopPoint(actorData);
 			}
-			__result = true;
-			return false;
+			return true;
 		}
 
 		public static void finalizeActor_Postfix(string pStats, Actor pActor, WorldTile pTile, float pZHeight = 0f)
@@ -154,6 +172,7 @@ namespace HeraldicBox
 					HeraldicComponent newComponent = pActor.gameObject.AddComponent<HeraldicComponent>();
 					newComponent.Heraldic = heraldicInfo;
 					heraldicInfo.actor = pActor;
+					heraldicInfo.TryUpdateActorInfo();
 				}
 			}
 		}
@@ -185,6 +204,14 @@ namespace HeraldicBox
 		// SHITS SECTION
 		// ====================================================
 
+		static private ResourceAsset getFoodItem(string pFavoriteFood = null, City __instance = null)
+		{
+			if (!string.IsNullOrEmpty(pFavoriteFood) && __instance.data.storage.get(pFavoriteFood) > 0)
+			{
+				return AssetManager.resources.get(pFavoriteFood);
+			}
+			return __instance.data.storage.getRandomFood();
+		}
 		private static Culture getBabyCulture(Actor pActor1, Actor pActor2)
 		{
 			MapBox world = MapBox.instance;
