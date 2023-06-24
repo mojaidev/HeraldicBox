@@ -19,6 +19,7 @@ namespace HeraldicBox
             // FAMILY PATCHES
             // ====================================================
             Mojai.Managers.PatchManager.NewPatch("Family Patch", AccessTools.Method(typeof(ActorBase), "getName"), AccessTools.Method(typeof(Family), "getName_Prefix"), Mojai.Managers.PatchManager.Methods.Prefix);
+            Mojai.Managers.PatchManager.NewPatch("Family Patch", AccessTools.Method(typeof(Actor), "killHimself"), AccessTools.Method(typeof(Family), "killHimself_Postfix"), Mojai.Managers.PatchManager.Methods.Postfix);
             Mojai.Managers.PatchManager.NewPatch("Family Patch", AccessTools.Method(typeof(MapBox), "clearTiles"), AccessTools.Method(typeof(Family), "clearTiles_Postfix"), Mojai.Managers.PatchManager.Methods.Postfix);
             Mojai.Managers.PatchManager.NewPatch("Family Patch", AccessTools.Method(typeof(MapBox), "generateNewMap"), AccessTools.Method(typeof(Family), "clearTiles_Postfix"), Mojai.Managers.PatchManager.Methods.Postfix);
 

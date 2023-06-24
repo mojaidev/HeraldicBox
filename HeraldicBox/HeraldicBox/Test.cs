@@ -16,7 +16,7 @@ namespace HeraldicBox
         public static void debug_2()
         {
             //HeraldicBoxUI.confirmation_override_heraldiccomponent.show(null);
-            //Saves.SaveHerladic();
+            Saves.SaveHerladic();
         }
 
         public static void Init()

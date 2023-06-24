@@ -7,42 +7,89 @@ namespace HeraldicBox
     class Saves
     {
         public static string jsonFamilies;
-        public static string jsonInfos;
 
-        public static bool LoadHeraldic()
+        public static Results LoadHeraldic()
         {
+            Results results = new Results();
             List<Family> families = JsonConvert.DeserializeObject<List<Family>>(jsonFamilies);
-            List<HeraldicInfo> infos = JsonConvert.DeserializeObject<List<HeraldicInfo>>(jsonInfos);
+            List<Actor> loadedUnits = new List<Actor>();
 
             foreach(Family pFamily in families)
             {
-                Family.families.Pop();
-                families.Add(pFamily);
-            }
+                results.loaded_families += 1;
+                Family.families.Add(pFamily);
 
-            foreach (Actor pActor in World.world.units)
-            {
-                ActorData actor_data = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
-
-                foreach (HeraldicInfo pInfo in infos)
+                foreach(HeraldicInfo pInfo in pFamily.aliveMembers)
                 {
-                    if(pInfo.actorData.id == actor_data.id)
+                    bool loaded = false;
+                    foreach (Actor pActor in World.world.units)
                     {
-                        HeraldicComponent component = pActor.gameObject.AddComponent<HeraldicComponent>();
+                        ActorData actor_data = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
+
+                        if(actor_data.id != pInfo.actorData.id)
+                        {
+                            continue;
+                        }
+
+                        HeraldicComponent component;
+
+                        if (pActor.gameObject.GetComponent<HeraldicComponent>() != null)
+                        {
+                            component = pActor.gameObject.GetComponent<HeraldicComponent>();
+                        }
+                        else
+                        {
+                            component = pActor.gameObject.AddComponent<HeraldicComponent>();
+                        }
+                        
                         component.Heraldic = pInfo;
                         pInfo.actor = pActor;
+                        loadedUnits.Add(pActor);
+                        pInfo.TryUpdateActorInfo();
+                        loaded = true;
+                    }
+
+                    if (loaded)
+                    {
+                        results.loaded_units += 1;
+                    }
+                    else
+                    {
+                        results.lost_units += 1;
                     }
                 }
             }
-            return true;
+
+            foreach(Actor pActor in loadedUnits)
+            {
+                HeraldicInfo info = pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic;
+                
+                if(info.father != null)
+                {
+                    info.father.children.Add(info);
+                    pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic = info.father;
+                }
+
+                if(info.mother != null)
+                {
+                    info.mother.children.Add(info);
+                }
+            }
+
+            return results;
         }
 
         public static bool SaveHerladic()
         {
-            jsonInfos = JsonConvert.SerializeObject(HeraldicInfo.allInfo);
-            Mojai.Mod.Util.Print(jsonInfos);
             jsonFamilies = JsonConvert.SerializeObject(Family.families);
             return true;
+        }
+
+        public class Results
+        {
+            public int loaded_units;
+            public int loaded_families;
+            public int lost_units;
         }
     }
 }

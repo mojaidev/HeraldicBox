@@ -41,12 +41,14 @@ namespace HeraldicBox
             PowerButton family_index_button = PowerButtons.CreateButton("family_index_button", Resources.Load<Sprite>("ui/icons/index_icon"), "Family Index", "Track down families.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_index);
             PowerButton aboutme_button = PowerButtons.CreateButton("aboutme_button_mojai", Resources.Load<Sprite>("ui/icons/mojai_author_icon"), "About Me", "Ñ", Vector2.zero);
             PowerButton settings_button = PowerButtons.CreateButton("heraldic_settings", Resources.Load<Sprite>("ui/icons/options_icon"), "Settings", "Modify HeraldicBox behaviour by changing the settings.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_settings);
+            PowerButton save_button = PowerButtons.CreateButton("heraldic_save_button", Resources.Load<Sprite>("ui/icons/save_icon"), "Save", "Modify HeraldicBox behaviour by changing the settings.", Vector2.zero, ButtonType.Click, null, HeraldicBoxActions.show_settings);
 
             TabLibrary.Tab.AddButtonToTab(newfamily_button,                         "tab_heraldicbox", new Vector2(211.2f, 18));
             TabLibrary.Tab.AddButtonToTab(tool_deleteall_families_button,           "tab_heraldicbox", new Vector2(254.2f, 18));
             TabLibrary.Tab.AddButtonToTab(inspectfamily_drop_button,                "tab_heraldicbox", new Vector2(297.2f, 18));
             TabLibrary.Tab.AddButtonToTab(family_index_button,                      "tab_heraldicbox", new Vector2(340.2f, 18));
             TabLibrary.Tab.AddButtonToTab(settings_button,                          "tab_heraldicbox", new Vector2(383.2f, 18));
+            TabLibrary.Tab.AddButtonToTab(save_button,                              "tab_heraldicbox", new Vector2(426.2f, 18));
             TabLibrary.Tab.AddButtonToTab(aboutme_button,                           "tab_heraldicbox", new Vector2(803.2f, 18));
         }
 
@@ -259,8 +261,15 @@ namespace HeraldicBox
 
                 String button_uuid = Guid.NewGuid().ToString();
                 HeraldicInfo founder = pFamily.members[0];
+                Sprite buttonSprite = founder.savedSprite;
+
+                if(pFamily.aliveMembers.Count <= 0)
+                {
+                    buttonSprite = Resources.Load<Sprite>("ui/icons/dead");
+                }
+
                 // Should be changed
-                PowerButton button = PowerButtons.CreateButton("familyindex_look_button_" + button_uuid, founder.savedSprite, pFamily.familyName, "", position, ButtonType.Click, window.content.transform, buttonClick);
+                PowerButton button = PowerButtons.CreateButton("familyindex_look_button_" + button_uuid, buttonSprite, pFamily.familyName, "", position, ButtonType.Click, window.content.transform, buttonClick);
                 button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(32, 38);
                 button.gameObject.GetComponent<Image>().sprite = pFamily.shield;
                 //button.gameObject.GetComponent<Image>().color = pFamily.familyColor;
@@ -279,6 +288,7 @@ namespace HeraldicBox
                 foreach (Family pFamily in Family.families)
                 {
                     FamilyButton(pFamily, new Vector2(lastX, lastY));
+
                     lastX += 40;
                     if (lastX >= 160)
                     {

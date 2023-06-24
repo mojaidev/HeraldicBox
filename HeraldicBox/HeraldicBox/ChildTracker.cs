@@ -62,32 +62,30 @@ namespace HeraldicBox
 			Actor actor2 = null;
 			ActorData actor_data2 = null;
 
-			// This nesting is horrible...
-			if (_possibleParents.Count > 0)
+			if (_possibleParents.Count > 0 && heraldicComponent1 != null)
 			{
-				if (heraldicComponent1 != null)
+				for (int i = 0; i < _possibleParents.Count; i++)
 				{
-					for (int i = 0; i < _possibleParents.Count; i++)
+					Actor pActor = _possibleParents[i];
+					ActorData pData = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
+
+					if ((bool)HeraldicBoxSettings.GetSetting("LGBT_Reproduction") == false && pData.gender == actor_data.gender)
 					{
-						Actor pActor = _possibleParents[i];
-						ActorData pData = Reflection.GetField(typeof(Actor), pActor, "data") as ActorData;
-						if ((bool)HeraldicBoxSettings.GetSetting("LGBT_Reproduction") == false && pData.gender == actor_data.gender)
-                        {
-                        }
-                        else
-                        {
-							if (pActor.gameObject.GetComponent<HeraldicComponent>() != null)
-							{
-								if (pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic.family != heraldicComponent1.Heraldic.family)
-								{
-									actor2 = pActor;
-									actor_data2 = pData;
-									heraldicComponent2 = actor2.gameObject.GetComponent<HeraldicComponent>();
-									_possibleParents.Remove(pActor);
-									break;
-								}
-							}
-						}
+						continue;
+					}
+
+					if (pActor.gameObject.GetComponent<HeraldicComponent>() == null)
+					{
+						continue;
+					}
+
+					if (pActor.gameObject.GetComponent<HeraldicComponent>().Heraldic.family != heraldicComponent1.Heraldic.family)
+					{
+						actor2 = pActor;
+						actor_data2 = pData;
+						heraldicComponent2 = actor2.gameObject.GetComponent<HeraldicComponent>();
+						_possibleParents.Remove(pActor);
+						break;
 					}
 				}
 			}

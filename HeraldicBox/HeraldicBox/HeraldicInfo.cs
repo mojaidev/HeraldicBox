@@ -14,37 +14,37 @@ namespace HeraldicBox
         public string city = "Nowhere";
 
         public ActorData actorData;
-        public List<HeraldicInfo> children = new List<HeraldicInfo>();
-        public Family family;
         public HeraldicInfo father, mother;
 
-        public string publicID; // <-- This is for the save system.
-
+        [NonSerialized] public List<HeraldicInfo> children = new List<HeraldicInfo>();  // <-- Automatically added by the save system.
+        [NonSerialized] public Family family;                                           // <-- Also automatically added by the save system.
         [NonSerialized] public Actor actor;
         [NonSerialized] public Sprite savedSprite = Resources.Load<Sprite>("ui/icons/dead");
 
         public void TryUpdateActorInfo()
         {
-            if(actor != null)
+            if(actor == null)
             {
-                GameObject loader_object = new GameObject("loader");
-                UnitAvatarLoader loader = loader_object.AddComponent<UnitAvatarLoader>() as UnitAvatarLoader;
-                loader.load(actor);
-                Image avatar = loader.transform.GetChild(0).gameObject.GetComponent<Image>();
-                savedSprite = avatar.sprite;
-                UnityEngine.Object.Destroy(loader_object);
+                return;
+            }
 
-                actorName = actor.getName();
+            GameObject loader_object = new GameObject("loader");
+            UnitAvatarLoader loader = loader_object.AddComponent<UnitAvatarLoader>() as UnitAvatarLoader;
+            loader.load(actor);
+            Image avatar = loader.transform.GetChild(0).gameObject.GetComponent<Image>();
+            savedSprite = avatar.sprite;
+            UnityEngine.Object.Destroy(loader_object);
 
-                if(actor.kingdom != null)
-                {
-                    kingdom = actor.kingdom.name;
-                }
+            actorName = actor.getName();
 
-                if(actor.city != null)
-                {
-                    city = actor.city.getCityName();
-                }
+            if (actor.kingdom != null)
+            {
+                kingdom = actor.kingdom.name;
+            }
+
+            if (actor.city != null)
+            {
+                city = actor.city.getCityName();
             }
         }
 
@@ -68,7 +68,6 @@ namespace HeraldicBox
             }
 
             allInfo.Add(this);
-            publicID = Guid.NewGuid().ToString();
         }
     }
 }

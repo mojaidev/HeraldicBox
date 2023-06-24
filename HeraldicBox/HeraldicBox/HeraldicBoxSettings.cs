@@ -49,15 +49,13 @@ namespace HeraldicBox
         }
 
 
+
+
+
         public readonly string settings_version = "0.0.3";
         // ====================================================
         // DEFAULT SETTINGS
         // ====================================================
-
-
-
-
-
         public Dictionary<string, Setting> settings = new Dictionary<string, Setting>() {
             { "Asexual_Reproduction", new Setting(true, "Asexual Reproduction")},
             { "LGBT_Reproduction", new Setting(true, "LGBT Reproduction") },
@@ -66,6 +64,9 @@ namespace HeraldicBox
             { "tab_HeraldicBox_Position", new Setting((float)-250) },
             { "Traits_Probability", new Setting(0f.ToString(), "INHERITANCE PROBABILITY (0 to 100)") }
         };
+
+
+
 
         [NonSerialized]
         private static Dictionary<string, CustomInput> behaviour = new Dictionary<string, CustomInput>()
